@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>save_test</title>
+</head>
+<body>
+<h1>게시물 작성</h1>
+<form action="/board/post" method="post">
+    사용자 ID: <input type="text" name="user_id"/><br>
+    분실물 이름: <input type="text" name="lost_name"/><br>
+    카테고리: <input type="text" name="category"/><br>
+    설명: <input type="text" name="field"/><br>
+    분실 날짜: <input type="date" name="lost_date"/><br>
+    분실 장소: <input type="text" name="lost_location"/><br>
+    분실 상태: <input type="text" name="lost_status"/><br>
+    분실 사진: <input type="file" name="lost_img"/><br>
+    <button type="submit">저장</button>
+</form>
+</body>
+</html>

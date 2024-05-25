@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>save_test</title>
+</head>
+<body>
+<h1>게시물 작성</h1>
+<form action="#" th:action="@{/board/post}" th:object="${boardDto}" method="post">
+    <input type="text" th:field="*{user_id}" placeholder="아이디" required />
+    <input type="text" th:field="*{lost_name}" placeholder="분실물 이름" required />
+    <input type="text" th:field="*{category}" placeholder="카테고리" required />
+    <input type="text" th:field="*{field}" placeholder="설명" />
+    <input type="date" th:field="*{lost_date}" placeholder="분실날짜" required />
+    <input type="text" th:field="*{lost_location}" placeholder="분실장소" required />
+    <input type="text" th:field="*{lost_status}" placeholder="분실상태" required />
+    <input type="file" th:field="*{lost_img}" placeholder="분실사진" />
+    <button type="submit">Submit</button>
+</form>
+</form>
+</body>
+</html>
