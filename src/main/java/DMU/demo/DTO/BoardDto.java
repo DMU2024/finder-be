@@ -19,6 +19,7 @@ public class BoardDto {
     private String lost_location;
     private String lost_status;
     private byte[] lost_img;
+    private String imageBase64;
 
     public Board toEntity() {
         return Board.builder()
@@ -46,4 +47,14 @@ public class BoardDto {
         this.lost_status = lost_status;
         this.lost_img = lost_img;
     }
+
+    public String getImageBase64() {
+        return imageBase64;
+    }
+
+    public void setImageBase64(String imageBase64) {
+        this.imageBase64 = imageBase64;
+    }
+
+
 }

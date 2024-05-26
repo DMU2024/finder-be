@@ -5,19 +5,18 @@ import DMU.demo.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
-
+import java.util.Base64;
 
 @Controller
 @RequestMapping("/board")
 public class BoardController {
     private final BoardService boardService;
-
+    private static final Logger logger = LoggerFactory.getLogger(BoardController.class);
     @Autowired
     public BoardController(BoardService boardService) {
         this.boardService = boardService;
@@ -38,4 +37,23 @@ public class BoardController {
         boardService.savePost(boardDto);
         return "redirect:/board/post"; // 저장 후 다시 글 작성 페이지로 리다이렉트
     }
+
+    //게시글 리스트 페이지
+    @GetMapping("/list")
+    public String list(Model model) {
+        logger.info("Accessing /board/list");
+        List<BoardDto> boardList = boardService.getBoardList();
+
+        for (BoardDto board : boardList) {
+            if (board.getLost_img() != null) {
+                String base64Image = Base64.getEncoder().encodeToString(board.getLost_img());
+                board.setImageBase64("data:image/jpeg;base64," + base64Image);  // MIME 타입 추가
+                logger.info("Base64 Image: " + board.getImageBase64());  // 로그 출력 추가
+            }
+        }
+
+        model.addAttribute("boardList", boardList);
+        return "board/list";
+    }
+
 }

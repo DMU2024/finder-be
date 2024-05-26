@@ -14,6 +14,7 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
 
+
     @Autowired
     public BoardService(BoardRepository boardRepository) {
         this.boardRepository = boardRepository;
@@ -32,5 +33,22 @@ public class BoardService {
                 .build();
 
         boardRepository.save(board);
+    }
+
+    public List<BoardDto> getBoardList() {
+        List<Board> boards = boardRepository.findAll();
+        return boards.stream()
+                .map(board -> BoardDto.builder()
+                        .lost_id(board.getLost_id())
+                        .user_id(board.getUser_id())
+                        .lost_name(board.getLost_name())
+                        .category(board.getCategory())
+                        .field(board.getField())
+                        .lost_date(board.getLost_date())
+                        .lost_location(board.getLost_location())
+                        .lost_status(board.getLost_status())
+                        .lost_img(board.getLost_img())
+                        .build())
+                .collect(Collectors.toList());
     }
 }
