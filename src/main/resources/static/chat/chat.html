@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <style>
+        .message-container {
+            margin-bottom: 10px;
+            overflow: auto;
+            max-height: 400px;
+        }
+    </style>
+</head>
+<body>
+<div id="chat-container">
+    <h1>Chat</h1>
+    <div class="message-container" id="messages"></div>
+    <div>
+        <input type="text" id="messageInput" placeholder="Enter your message here..." />
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+    let ws;
+    let recipientId = sessionStorage.getItem("recipient");
+
+    function connect() {
+        ws = new WebSocket("ws://localhost:8081/ws/chat");
+
+        ws.onopen = function() {
+            console.log("Connected to the chat server");
+        };
+
+        ws.onmessage = function(event) {
+            const messageElement = document.createElement("div");
+            messageElement.textContent = event.data;
+            document.getElementById("messages").appendChild(messageElement);
+        };
+
+        ws.onclose = function() {
+            console.log("Disconnected from the chat server");
+        };
+    }
+
+    function sendMessage() {
+        const input = document.getElementById("messageInput");
+        const message = input.value.trim();
+        if (message === "") {
+            return;
+        }
+        ws.send(recipientId + ":" + message);
+        input.value = "";
+    }
+
+    connect();
+</script>
+</body>
+</html>
