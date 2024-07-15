@@ -9,6 +9,7 @@
 <form action="#" th:action="@{/board/post}" th:object="${boardDto}" method="post">
     <input type="text" th:field="*{user_id}" placeholder="아이디" required />
     <input type="text" th:field="*{lost_name}" placeholder="분실물 이름" required />
+    <input type="text" th:field="*{large_category}" placeholder="큰 카테고리" required />
     <input type="text" th:field="*{category}" placeholder="카테고리" required />
     <input type="text" th:field="*{field}" placeholder="설명" />
     <input type="date" th:field="*{lost_date}" placeholder="분실날짜" required />

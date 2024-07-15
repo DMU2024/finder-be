@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Application</title>
+    <style>
+        .user-list {
+            list-style-type: none;
+        }
+        .user-list li {
+            margin: 5px 0;
+        }
+        .user-list li a {
+            text-decoration: none;
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+<h1>Users</h1>
+<ul id="userList" class="user-list"></ul>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        fetch("/api/users")
+            .then(response => response.json())
+            .then(users => {
+                const userList = document.getElementById("userList");
+                users.forEach(user => {
+                    const listItem = document.createElement("li");
+                    const link = document.createElement("a");
+                    link.href = `/chat.html?recipient=${user.username}`;
+                    link.textContent = user.username;
+                    listItem.appendChild(link);
+                    userList.appendChild(listItem);
+                });
+            });
+    });
+</script>
+</body>
+</html>

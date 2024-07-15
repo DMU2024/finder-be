@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User List</title>
+</head>
+<body>
+<h2>User List</h2>
+<ul id="userList"></ul>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        fetchUsers();
+    });
+
+    function fetchUsers() {
+        fetch("http://localhost:8081/users")
+            .then(response => response.json())
+            .then(users => {
+                let userList = document.getElementById("userList");
+                users.forEach(user => {
+                    let li = document.createElement("li");
+                    let button = document.createElement("button");
+                    button.textContent = user.username;
+                    button.onclick = function() {
+                        sessionStorage.setItem("recipient", user.username);
+                        window.location.href = "chat.html";
+                    };
+                    li.appendChild(button);
+                    userList.appendChild(li);
+                });
+            })
+            .catch(error => console.error("Error fetching users:", error));
+    }
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@ package DMU.demo.DTO;
 import DMU.demo.domain.entity.Board;
 import lombok.*;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -13,9 +13,11 @@ public class BoardDto {
     private Integer lost_id;
     private String user_id;
     private String lost_name;
+    private String large_category;
     private String category;
     private String field;
-    private Date lost_date;
+    private LocalDateTime write_date;
+    private LocalDateTime lost_date;
     private String lost_location;
     private String lost_status;
     private byte[] lost_img;
@@ -26,8 +28,10 @@ public class BoardDto {
                 .lost_id(lost_id)
                 .user_id(user_id)
                 .lost_name(lost_name)
+                .large_category(large_category)
                 .category(category)
                 .field(field)
+                .write_date(write_date)
                 .lost_date(lost_date)
                 .lost_location(lost_location)
                 .lost_status(lost_status)
@@ -36,25 +40,17 @@ public class BoardDto {
     }
 
     @Builder
-    public BoardDto(Integer lost_id, String user_id, String lost_name, String category, String field, Date lost_date, String lost_location, String lost_status, byte[] lost_img) {
+    public BoardDto(Integer lost_id, String user_id, String lost_name, String large_category, String category, String field, LocalDateTime write_date, LocalDateTime lost_date, String lost_location, String lost_status, byte[] lost_img) {
         this.lost_id = lost_id;
         this.user_id = user_id;
         this.lost_name = lost_name;
+        this.large_category = large_category;
         this.category = category;
         this.field = field;
+        this.write_date = write_date;
         this.lost_date = lost_date;
         this.lost_location = lost_location;
         this.lost_status = lost_status;
         this.lost_img = lost_img;
     }
-
-    public String getImageBase64() {
-        return imageBase64;
-    }
-
-    public void setImageBase64(String imageBase64) {
-        this.imageBase64 = imageBase64;
-    }
-
-
 }
