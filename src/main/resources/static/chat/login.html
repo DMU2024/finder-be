@@ -16,18 +16,17 @@
 </form>
 
 <script>
-    document.getElementById("loginForm").addEventListener("submit", function(event) {
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        let username = document.getElementById("username").value;
-        let password = document.getElementById("password").value;
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
 
-        // Simulate login (replace with actual authentication logic)
-        // Here, you can use AJAX to send credentials to the server for authentication
+        // 간단한 인증 로직 (실제 환경에서는 서버와 통신 필요)
         if (username && password) {
-            sessionStorage.setItem("username", username);
-            window.location.href = "user_list.html";
+            localStorage.setItem('username', username);
+            window.location.href = 'user_list.html';
         } else {
-            alert("Invalid username or password");
+            alert('Invalid username or password');
         }
     });
 </script>
