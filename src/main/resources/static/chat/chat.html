@@ -3,58 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat</title>
+    <title>Chat Room</title>
     <style>
-        .message-container {
-            margin-bottom: 10px;
-            overflow: auto;
-            max-height: 400px;
+        #chat-box {
+            border: 1px solid black;
+            height: 300px;
+            overflow-y: scroll;
+            padding: 10px;
+        }
+        #message-input {
+            width: 80%;
         }
     </style>
 </head>
 <body>
-<div id="chat-container">
-    <h1>Chat</h1>
-    <div class="message-container" id="messages"></div>
-    <div>
-        <input type="text" id="messageInput" placeholder="Enter your message here..." />
-        <button onclick="sendMessage()">Send</button>
-    </div>
+<h1>Chat Room</h1>
+<div id="chat-box">
+    <!-- Messages will be displayed here -->
 </div>
+<input type="text" id="message-input" placeholder="Type a message...">
+<button onclick="sendMessage()">Send</button>
 
 <script>
     let ws;
-    let recipientId = sessionStorage.getItem("recipient");
 
-    function connect() {
-        ws = new WebSocket("ws://localhost:8081/ws/chat");
+    document.addEventListener("DOMContentLoaded", function() {
+        const username = localStorage.getItem("username");
+        const recipient = sessionStorage.getItem("recipient");
+
+        if (!username || !recipient) {
+            window.location.href = "login.html"; // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
+            return;
+        }
+
+        ws = new WebSocket("ws://localhost:8081/ws/chat?username=" + encodeURIComponent(username));
 
         ws.onopen = function() {
-            console.log("Connected to the chat server");
+            console.log('Connected to WebSocket');
         };
 
         ws.onmessage = function(event) {
-            const messageElement = document.createElement("div");
-            messageElement.textContent = event.data;
-            document.getElementById("messages").appendChild(messageElement);
+            let chatBox = document.getElementById('chat-box');
+            let message = document.createElement('div');
+            message.textContent = event.data;
+            chatBox.appendChild(message);
+            chatBox.scrollTop = chatBox.scrollHeight;
         };
 
-        ws.onclose = function() {
-            console.log("Disconnected from the chat server");
+        window.sendMessage = function() {
+            let messageInput = document.getElementById('message-input');
+            let message = messageInput.value;
+            if (message.trim() !== '') {
+                ws.send(JSON.stringify({
+                    sender: username,
+                    recipient: recipient,
+                    message: message
+                }));
+                messageInput.value = '';
+            }
         };
-    }
 
-    function sendMessage() {
-        const input = document.getElementById("messageInput");
-        const message = input.value.trim();
-        if (message === "") {
-            return;
-        }
-        ws.send(recipientId + ":" + message);
-        input.value = "";
-    }
-
-    connect();
+        window.onbeforeunload = function() {
+            ws.close();
+        };
+    });
 </script>
 </body>
 </html>
