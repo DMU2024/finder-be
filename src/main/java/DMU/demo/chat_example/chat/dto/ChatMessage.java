@@ -1,7 +1,6 @@
 package DMU.demo.chat_example.chat.dto;
 
 import lombok.*;
-
 import jakarta.persistence.*;
 import java.sql.Timestamp;
 import java.sql.Time;
@@ -20,16 +19,16 @@ public class ChatMessage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int messageId; // 변경된 부분
+    private int messageId;
 
     @Column(nullable = false)
     private String roomId;
 
     @Column(nullable = false)
-    private int userId; // 변경된 부분
+    private int userId;
 
     @Column(nullable = false)
-    private int sender; // 변경된 부분
+    private int sender;
 
     @Column(nullable = false)
     private String message;

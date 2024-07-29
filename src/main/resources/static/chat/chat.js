@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     ws.onopen = function() {
         console.log("Connected to the chat server");
-        ws.send(`${username} has entered the chat`); // 입장 메시지 전송
+        ws.send(${username} has entered the chat); // 입장 메시지 전송
     };
 
     ws.onmessage = function(event) {
@@ -26,9 +26,9 @@ document.addEventListener("DOMContentLoaded", function() {
         messageElement.className = "mb-3";
 
         if (event.data.startsWith(username)) {
-            messageElement.innerHTML = `<div class="alert alert-primary">${event.data}</div>`;
+            messageElement.innerHTML = <div class="alert alert-primary">${event.data}</div>;
         } else {
-            messageElement.innerHTML = `<div class="alert alert-secondary">${event.data}</div>`;
+            messageElement.innerHTML = <div class="alert alert-secondary">${event.data}</div>;
         }
 
         document.getElementById("chatArea").appendChild(messageElement);
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const message = messageInput.value.trim();
 
         if (message) {
-            ws.send(`${username}: ${message}`);
+            ws.send(${username}: ${message});
             messageInput.value = "";
         }
     };
