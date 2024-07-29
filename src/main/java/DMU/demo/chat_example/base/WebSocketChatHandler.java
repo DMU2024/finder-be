@@ -17,8 +17,10 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import java.nio.charset.StandardCharsets;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -58,6 +60,11 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             String recipient = jsonNode.get("recipient").asText();
             String msg = jsonNode.get("message").asText();
 
+            // Create a consistent room ID for the chat room
+            String[] users = {sender, recipient};
+            Arrays.sort(users);
+            String roomId = String.join("_", users);
+
             // Broadcast the message to all connected clients
             for (WebSocketSession s : sessions.values()) {
                 if (s.isOpen()) {
@@ -69,7 +76,7 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             User recipientUser = userRepository.findByUsername(recipient);
             if (senderUser != null && recipientUser != null) {
                 ChatMessage chatMessage = ChatMessage.builder()
-                        .roomId(senderUser.getUserId() + "_" + recipientUser.getUserId())
+                        .roomId(roomId)
                         .userId(recipientUser.getUserId())
                         .sender(senderUser.getUserId())
                         .message(msg)
@@ -96,4 +103,6 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             log.warn("Username is null in session attributes.");
         }
     }
+
+
 }

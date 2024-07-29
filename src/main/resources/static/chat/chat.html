@@ -26,15 +26,34 @@
 
 <script>
     let ws;
+    let recipient;
+    const username = localStorage.getItem("username");
 
     document.addEventListener("DOMContentLoaded", function() {
-        const username = localStorage.getItem("username");
-        const recipient = sessionStorage.getItem("recipient");
+        recipient = sessionStorage.getItem("recipient");
 
         if (!username || !recipient) {
             window.location.href = "login.html"; // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
             return;
         }
+
+        // Create a consistent room ID for the chat room
+        const sortedUsernames = [username, recipient].sort();
+        const roomId = `${sortedUsernames[0]}_${sortedUsernames[1]}`;
+
+        // Load previous messages
+        fetch(`http://localhost:8081/chat/messages?roomId=${roomId}`)
+            .then(response => response.json())
+            .then(messages => {
+                let chatBox = document.getElementById('chat-box');
+                messages.forEach(message => {
+                    let messageDiv = document.createElement('div');
+                    messageDiv.textContent = `${message.sender}: ${message.message}`;
+                    chatBox.appendChild(messageDiv);
+                });
+                chatBox.scrollTop = chatBox.scrollHeight;
+            })
+            .catch(error => console.error('Error fetching messages:', error));
 
         ws = new WebSocket("ws://localhost:8081/ws/chat?username=" + encodeURIComponent(username));
 
