@@ -20,7 +20,6 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -65,13 +64,15 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             Arrays.sort(users);
             String roomId = String.join("_", users);
 
-            // Broadcast the message to all connected clients
-            for (WebSocketSession s : sessions.values()) {
-                if (s.isOpen()) {
-                    s.sendMessage(new TextMessage(sender + ": " + msg));
-                }
+            // Send the message only to the recipient
+            WebSocketSession recipientSession = sessions.get(recipient);
+            if (recipientSession != null && recipientSession.isOpen()) {
+                recipientSession.sendMessage(new TextMessage(sender + ": " + msg));
+            } else {
+                log.warn("Recipient session is not available or not open.");
             }
 
+            // Save chat message to the repository
             User senderUser = userRepository.findByUsername(sender);
             User recipientUser = userRepository.findByUsername(recipient);
             if (senderUser != null && recipientUser != null) {
@@ -103,6 +104,4 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             log.warn("Username is null in session attributes.");
         }
     }
-
-
 }
