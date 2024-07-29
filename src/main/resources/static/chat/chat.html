@@ -47,9 +47,16 @@
             .then(messages => {
                 let chatBox = document.getElementById('chat-box');
                 messages.forEach(message => {
+                    // Display message with sender's username
                     let messageDiv = document.createElement('div');
-                    messageDiv.textContent = `${message.sender}: ${message.message}`;
-                    chatBox.appendChild(messageDiv);
+                    // Fetch sender's username
+                    fetch(`http://localhost:8081/users/${message.sender}`)
+                        .then(response => response.json())
+                        .then(user => {
+                            messageDiv.textContent = `${user.username}: ${message.message}`;
+                            chatBox.appendChild(messageDiv);
+                        })
+                        .catch(error => console.error('Error fetching user:', error));
                 });
                 chatBox.scrollTop = chatBox.scrollHeight;
             })
@@ -63,9 +70,12 @@
 
         ws.onmessage = function(event) {
             let chatBox = document.getElementById('chat-box');
-            let message = document.createElement('div');
-            message.textContent = event.data;
-            chatBox.appendChild(message);
+            let messageData = JSON.parse(event.data);
+
+            // Display message with sender's username
+            let messageDiv = document.createElement('div');
+            messageDiv.textContent = `${messageData.sender}: ${messageData.message}`;
+            chatBox.appendChild(messageDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
         };
 

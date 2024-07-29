@@ -20,6 +20,7 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -51,7 +52,7 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
-        log.info("payload : {}", payload);
+        log.info("Received payload: {}", payload);
 
         String sender = (String) session.getAttributes().get("username");
         if (sender != null) {
@@ -64,15 +65,23 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             Arrays.sort(users);
             String roomId = String.join("_", users);
 
-            // Send the message only to the recipient
+            // Format message to include sender's username
+            String formattedMessage = String.format("{\"sender\":\"%s\", \"message\":\"%s\"}", sender, msg);
+
+            // Send the message to the recipient
             WebSocketSession recipientSession = sessions.get(recipient);
             if (recipientSession != null && recipientSession.isOpen()) {
-                recipientSession.sendMessage(new TextMessage(sender + ": " + msg));
+                recipientSession.sendMessage(new TextMessage(formattedMessage));
             } else {
                 log.warn("Recipient session is not available or not open.");
             }
 
-            // Save chat message to the repository
+            // Also send the message to the sender
+            if (session.isOpen()) {
+                session.sendMessage(new TextMessage(formattedMessage));
+            }
+
+            // Save the message to the chat repository
             User senderUser = userRepository.findByUsername(sender);
             User recipientUser = userRepository.findByUsername(recipient);
             if (senderUser != null && recipientUser != null) {
