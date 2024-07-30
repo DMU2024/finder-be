@@ -1,9 +1,9 @@
-package DMU.demo.chat_example.base;
+package DMU.demo.chat.service;
 
-import DMU.demo.chat_example.chat.dto.ChatMessage;
-import DMU.demo.chat_example.chat.dto.User;
-import DMU.demo.chat_example.chat.repository.ChatRepository;
-import DMU.demo.chat_example.chat.repository.UserRepository;
+import DMU.demo.chat.dto.ChatMessage;
+import DMU.demo.chat.dto.User;
+import DMU.demo.chat.domain.repository.ChatRepository;
+import DMU.demo.chat.domain.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -14,13 +14,11 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.nio.charset.StandardCharsets;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j

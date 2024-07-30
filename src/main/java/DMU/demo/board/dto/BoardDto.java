@@ -1,7 +1,8 @@
-package DMU.demo.DTO;
+package DMU.demo.board.dto;
 
-import DMU.demo.domain.entity.Board;
+import DMU.demo.board.domain.entity.Board;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 

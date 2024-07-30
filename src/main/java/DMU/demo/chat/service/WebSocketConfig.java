@@ -1,6 +1,5 @@
-package DMU.demo.chat_example.config;
+package DMU.demo.chat.service;
 
-import DMU.demo.chat_example.base.WebSocketChatHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
