@@ -1,14 +1,13 @@
-package DMU.demo.Controller;
+package DMU.demo.board.controller;
 
-import DMU.demo.DTO.BoardDto;
-import DMU.demo.service.BoardService;
+import DMU.demo.board.dto.BoardDto;
+import DMU.demo.board.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Base64;
@@ -34,6 +33,7 @@ public class BoardController {
     // 게시글 작성 폼에서 제출된 데이터를 처리하는 메서드
     @PostMapping("/post")
     public String submitPostForm(@ModelAttribute("boardDto") BoardDto boardDto) {
+        logger.info(boardDto.toString());
         // 게시글 서비스를 통해 게시글 저장
         boardService.savePost(boardDto);
         return "redirect:/board/post"; // 저장 후 다시 글 작성 페이지로 리다이렉트

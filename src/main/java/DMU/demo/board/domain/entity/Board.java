@@ -1,4 +1,4 @@
-package DMU.demo.domain.entity;
+package DMU.demo.board.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

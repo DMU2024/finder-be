@@ -1,4 +1,4 @@
-package DMU.demo.chat_example.chat.dto;
+package DMU.demo.chat.dto;
 
 import jakarta.persistence.*;
 import lombok.*;

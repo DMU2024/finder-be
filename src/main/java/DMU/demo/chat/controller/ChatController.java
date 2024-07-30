@@ -1,7 +1,7 @@
-package DMU.demo.chat_example.chat.controller;
+package DMU.demo.chat.controller;
 
-import DMU.demo.chat_example.chat.dto.ChatMessage;
-import DMU.demo.chat_example.chat.repository.ChatRepository;
+import DMU.demo.chat.dto.ChatMessage;
+import DMU.demo.chat.domain.repository.ChatRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +13,6 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class ChatController {
-
     private final ChatRepository chatRepository;
 
     @GetMapping("/chat/messages")

@@ -1,6 +1,6 @@
-package DMU.demo.domain.repository;
+package DMU.demo.board.domain.repository;
 
-import DMU.demo.domain.entity.Board;
+import DMU.demo.board.domain.entity.Board;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

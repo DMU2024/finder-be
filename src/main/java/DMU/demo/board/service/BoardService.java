@@ -1,20 +1,17 @@
-package DMU.demo.service;
+package DMU.demo.board.service;
 
-import DMU.demo.DTO.BoardDto;
-import DMU.demo.domain.entity.Board;
-import DMU.demo.domain.repository.BoardRepository;
+import DMU.demo.board.dto.BoardDto;
+import DMU.demo.board.domain.entity.Board;
+import DMU.demo.board.domain.repository.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class BoardService {
-
     private final BoardRepository boardRepository;
-
 
     @Autowired
     public BoardService(BoardRepository boardRepository) {

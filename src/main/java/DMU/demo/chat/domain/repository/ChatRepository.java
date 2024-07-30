@@ -1,6 +1,6 @@
-package DMU.demo.chat_example.chat.repository;
+package DMU.demo.chat.domain.repository;
 
-import DMU.demo.chat_example.chat.dto.ChatMessage;
+import DMU.demo.chat.dto.ChatMessage;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
