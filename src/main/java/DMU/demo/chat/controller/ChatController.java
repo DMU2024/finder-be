@@ -1,6 +1,6 @@
 package DMU.demo.chat.controller;
 
-import DMU.demo.chat.dto.ChatMessage;
+import DMU.demo.chat.domain.entity.ChatMessage;
 import DMU.demo.chat.domain.repository.ChatRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ui.Model;

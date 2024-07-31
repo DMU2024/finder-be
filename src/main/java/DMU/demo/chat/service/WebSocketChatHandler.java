@@ -1,6 +1,6 @@
 package DMU.demo.chat.service;
 
-import DMU.demo.chat.dto.ChatMessage;
+import DMU.demo.chat.domain.entity.ChatMessage;
 import DMU.demo.chat.dto.User;
 import DMU.demo.chat.domain.repository.ChatRepository;
 import DMU.demo.chat.domain.repository.UserRepository;
