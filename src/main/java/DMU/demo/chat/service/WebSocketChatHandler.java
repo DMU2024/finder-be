@@ -32,16 +32,16 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         String query = session.getUri().getQuery();
-        String username = null;
+        String userId = null;
 
-        if (query != null && query.startsWith("username=")) {
-            username = query.substring("username=".length());
+        if (query != null && query.startsWith("userId=")) {
+            userId = query.substring("userId=".length());
         }
 
-        if (username != null) {
-            session.getAttributes().put("username", username);
-            sessions.put(username, session);
-            log.info("{} - 클라이언트 접속", username);
+        if (userId != null) {
+            session.getAttributes().put("userId", userId);
+            sessions.put(userId, session);
+            log.info("{} - 클라이언트 접속", userId);
         } else {
             log.warn("Username is null in session attributes.");
         }
@@ -52,11 +52,14 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         String payload = message.getPayload();
         log.info("Received payload: {}", payload);
 
-        String sender = (String) session.getAttributes().get("username");
+        String sender = (String) session.getAttributes().get("userId");
         if (sender != null) {
             JsonNode jsonNode = objectMapper.readTree(payload);
             String recipient = jsonNode.get("recipient").asText();
             String msg = jsonNode.get("message").asText();
+
+            User senderUser = userRepository.findById(Integer.parseInt(sender)).orElse(null);
+            User recipientUser = userRepository.findById(Integer.parseInt(recipient)).orElse(null);
 
             // Create a consistent room ID for the chat room
             String[] users = {sender, recipient};
@@ -64,7 +67,7 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             String roomId = String.join("_", users);
 
             // Format message to include sender's username
-            String formattedMessage = String.format("{\"sender\":\"%s\", \"message\":\"%s\"}", sender, msg);
+            String formattedMessage = String.format("{\"sender\":\"%s\", \"message\":\"%s\"}", senderUser.getUsername(), msg);
 
             // Send the message to the recipient
             WebSocketSession recipientSession = sessions.get(recipient);
@@ -80,8 +83,6 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             }
 
             // Save the message to the chat repository
-            User senderUser = userRepository.findByUsername(sender);
-            User recipientUser = userRepository.findByUsername(recipient);
             if (senderUser != null && recipientUser != null) {
                 ChatMessage chatMessage = ChatMessage.builder()
                         .roomId(roomId)
@@ -103,10 +104,10 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        String username = (String) session.getAttributes().get("username");
-        if (username != null) {
-            log.info("{} - 클라이언트 접속 해제", username);
-            sessions.remove(username);
+        String userId = (String) session.getAttributes().get("userId");
+        if (userId != null) {
+            log.info("{} - 클라이언트 접속 해제", userId);
+            sessions.remove(userId);
         } else {
             log.warn("Username is null in session attributes.");
         }
