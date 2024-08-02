@@ -22,7 +22,7 @@
         const password = document.getElementById('password').value;
 
         // 간단한 인증 로직 (실제 환경에서는 서버와 통신 필요)
-        fetch(`http://localhost:8081/users/login`, {
+        fetch(`http://localhost:8081/api/users/login`, {
             method: "post",
             headers: {
                 "Content-Type": "application/json",

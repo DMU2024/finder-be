@@ -17,7 +17,7 @@
     function fetchUsers() {
         const userId = Number(localStorage.getItem("userId"));
 
-        fetch("http://localhost:8081/users")
+        fetch("http://localhost:8081/api/users")
             .then(response => response.json())
             .then(users => {
                 let userList = document.getElementById("userList");
