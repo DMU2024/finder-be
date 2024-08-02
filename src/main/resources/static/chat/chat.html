@@ -36,14 +36,14 @@
             return;
         }
 
-        const senderUser = await (await fetch(`http://localhost:8081/users/${userId}`)).json();
-        const recipientUser = await (await fetch(`http://localhost:8081/users/${recipient}`)).json();
+        const senderUser = await (await fetch(`http://localhost:8081/api/users/${userId}`)).json();
+        const recipientUser = await (await fetch(`http://localhost:8081/api/users/${recipient}`)).json();
 
         // Create a consistent room ID for the chat room
         const roomId = [userId, recipient].sort().join("_");
 
         // Load previous messages
-        fetch(`http://localhost:8081/chat/messages?roomId=${roomId}`)
+        fetch(`http://localhost:8081/api/chat/messages?roomId=${roomId}`)
             .then(response => response.json())
             .then(messages => {
                 const chatBox = document.getElementById('chat-box');
@@ -59,7 +59,7 @@
             })
             .catch(error => console.error('Error fetching messages:', error));
 
-        ws = new WebSocket(`ws://localhost:8081/ws/chat?userId=${userId}`);
+        ws = new WebSocket(`ws://localhost:8081/api/ws/chat?userId=${userId}`);
 
         ws.onopen = function () {
             console.log('Connected to WebSocket');
