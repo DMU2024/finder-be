@@ -1,0 +1,15 @@
+package DMU.demo.chat.dto;
+
+import lombok.*;
+
+import java.sql.Time;
+import java.sql.Timestamp;
+
+@Data
+@Builder
+public class ChatDto {
+    private int sender;
+    private String message;
+    private Timestamp messageDate;
+    private Time messageTime;
+}

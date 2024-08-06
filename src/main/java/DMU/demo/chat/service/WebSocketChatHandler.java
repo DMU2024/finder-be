@@ -1,6 +1,7 @@
 package DMU.demo.chat.service;
 
 import DMU.demo.chat.domain.entity.ChatMessage;
+import DMU.demo.chat.dto.ChatDto;
 import DMU.demo.chat.dto.User;
 import DMU.demo.chat.domain.repository.ChatRepository;
 import DMU.demo.chat.domain.repository.UserRepository;
@@ -58,16 +59,21 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             String recipient = jsonNode.get("recipient").asText();
             String msg = jsonNode.get("message").asText();
 
-            User senderUser = userRepository.findById(Integer.parseInt(sender)).orElse(null);
-            User recipientUser = userRepository.findById(Integer.parseInt(recipient)).orElse(null);
-
             // Create a consistent room ID for the chat room
             String[] users = {sender, recipient};
             Arrays.sort(users);
             String roomId = String.join("_", users);
 
             // Format message to include sender's username
-            String formattedMessage = String.format("{\"sender\":\"%s\", \"message\":\"%s\"}", senderUser.getUsername(), msg);
+            ObjectMapper mapper = new ObjectMapper();
+            ChatDto chatDto = ChatDto.builder()
+                    .sender(Integer.parseInt(sender))
+                    .message(msg)
+                    .messageDate(new Timestamp(System.currentTimeMillis()))
+                    .messageTime(new Time(System.currentTimeMillis()))
+                    .build();
+
+            String formattedMessage = mapper.writeValueAsString(chatDto);
 
             // Send the message to the recipient
             WebSocketSession recipientSession = sessions.get(recipient);
@@ -83,15 +89,15 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             }
 
             // Save the message to the chat repository
-            if (senderUser != null && recipientUser != null) {
+            if (recipient != null) {
                 ChatMessage chatMessage = ChatMessage.builder()
                         .roomId(roomId)
-                        .userId(recipientUser.getUserId())
-                        .sender(senderUser.getUserId())
-                        .message(msg)
+                        .userId(Integer.parseInt(recipient))
+                        .sender(chatDto.getSender())
+                        .message(chatDto.getMessage())
                         .messageType(ChatMessage.MessageType.TALK)
-                        .messageDate(new Timestamp(System.currentTimeMillis()))
-                        .messageTime(new Time(System.currentTimeMillis()))
+                        .messageDate(chatDto.getMessageDate())
+                        .messageTime(chatDto.getMessageTime())
                         .build();
                 chatRepository.save(chatMessage);
             } else {
