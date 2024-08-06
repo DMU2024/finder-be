@@ -2,9 +2,7 @@ package DMU.demo.chat.service;
 
 import DMU.demo.chat.domain.entity.ChatMessage;
 import DMU.demo.chat.dto.ChatDto;
-import DMU.demo.chat.dto.User;
 import DMU.demo.chat.domain.repository.ChatRepository;
-import DMU.demo.chat.domain.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +24,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class WebSocketChatHandler extends TextWebSocketHandler {
     private final ChatRepository chatRepository;
-    private final UserRepository userRepository;
     private static final Map<String, WebSocketSession> sessions = new HashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
