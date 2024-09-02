@@ -36,7 +36,7 @@
                 const data = await res.json();
 
                 localStorage.setItem("userId", data.userId);
-                window.location.href = 'user_list.html';
+                window.location.href = 'keyword.html'; //키워드 페이지로 이동
             } else {
                 alert(`Error: ${res.status}`);
             }
