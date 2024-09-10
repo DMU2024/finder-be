@@ -34,7 +34,6 @@ dependencies {
 
 	implementation 'mysql:mysql-connector-java:8.0.32'
 	implementation group: 'javax.annotation', name: 'javax.annotation-api', version: '1.3.2'
-	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation 'javax.persistence:javax.persistence-api:2.2'
 }
 

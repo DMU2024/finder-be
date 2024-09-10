@@ -1,7 +1,7 @@
 package DMU.demo.location.controller;
 
-import DMU.demo.chat.domain.entity.User;
-import DMU.demo.chat.domain.repository.UserRepository;
+import DMU.demo.user.domain.entity.User;
+import DMU.demo.user.domain.repository.UserRepository;
 import DMU.demo.location.domain.entity.Location;
 import DMU.demo.location.domain.repository.LocationRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class LocationController {
 
     @PostMapping
     public Location addLocation(@RequestBody Map<String, String> request) {
-        int userId = Integer.parseInt(request.get("userId"));
+        long userId = Long.parseLong(request.get("userId"));
         String locationText = request.get("location");
 
         User user = userRepository.findById(userId)
@@ -37,7 +37,7 @@ public class LocationController {
     }
 
     @GetMapping("/{userId}")
-    public List<Location> getLocationsByUser(@PathVariable int userId) {
+    public List<Location> getLocationsByUser(@PathVariable long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
@@ -50,7 +50,7 @@ public class LocationController {
     }
 
     @GetMapping("/search/{userId}")
-    public List<Location> searchLocations(@PathVariable int userId, @RequestParam String query) {
+    public List<Location> searchLocations(@PathVariable long userId, @RequestParam String query) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 

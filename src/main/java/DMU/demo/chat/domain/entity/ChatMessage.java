@@ -25,10 +25,10 @@ public class ChatMessage {
     private String roomId;
 
     @Column(nullable = false)
-    private int userId;
+    private long userId;
 
     @Column(nullable = false)
-    private int sender;
+    private long sender;
 
     @Column(nullable = false)
     private String message;

@@ -1,7 +1,7 @@
 package DMU.demo.keyword.domain.repository;
 
 import DMU.demo.keyword.domain.entity.Keyword;
-import DMU.demo.chat.domain.entity.User;
+import DMU.demo.user.domain.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

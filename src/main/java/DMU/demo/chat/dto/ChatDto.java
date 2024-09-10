@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 @Data
 @Builder
 public class ChatDto {
-    private int sender;
+    private long sender;
     private String message;
     private Timestamp messageDate;
     private Time messageTime;
