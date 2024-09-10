@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@CrossOrigin(origins = "*")
 @Controller
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -26,7 +27,6 @@ public class AuthController {
     private final KeywordRepository keywordRepository;
     private final LocationRepository locationRepository;
 
-    @CrossOrigin(origins = "*")
     @PostMapping("/login")
     public ResponseEntity<UserInfoMapping> kakaoLogin(@RequestBody Map<String, String> request) throws Exception {
         KakaoToken kakaoToken = kakaoService.postKakaoAuth(request.get("code"));
@@ -61,7 +61,7 @@ public class AuthController {
                 user.setAccessToken(null);
                 user.setRefreshToken(null);
                 userRepository.save(user);
-                return response;
+                return ResponseEntity.ok("" + user.getUserId());
             } else {
                 return ResponseEntity.internalServerError().build();
             }
@@ -81,7 +81,7 @@ public class AuthController {
                 keywordRepository.deleteAll(keywordRepository.findByUser(user));
                 locationRepository.deleteAll(locationRepository.findByUser(user));
                 userRepository.delete(user);
-                return response;
+                return ResponseEntity.ok("" + user.getUserId());
             } else {
                 return ResponseEntity.internalServerError().build();
             }
