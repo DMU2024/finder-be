@@ -1,8 +1,8 @@
 package DMU.demo.keyword.controller;
 
 import DMU.demo.keyword.domain.entity.Keyword;
-import DMU.demo.chat.domain.entity.User;
-import DMU.demo.chat.domain.repository.UserRepository;
+import DMU.demo.user.domain.entity.User;
+import DMU.demo.user.domain.repository.UserRepository;
 import DMU.demo.keyword.domain.repository.KeywordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,7 +23,7 @@ public class KeywordController {
 
     @PostMapping
     public Keyword addKeyword(@RequestBody Map<String, String> request) {
-        int userId = Integer.parseInt(request.get("userId"));
+        long userId = Long.parseLong(request.get("userId"));
         String keywordText = request.get("keyword");
 
         User user = userRepository.findById(userId)
@@ -38,7 +38,7 @@ public class KeywordController {
     }
 
     @GetMapping("/{userId}")
-    public List<Keyword> getKeywordsByUser(@PathVariable int userId) {
+    public List<Keyword> getKeywordsByUser(@PathVariable long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
@@ -51,7 +51,7 @@ public class KeywordController {
     }
 
     @GetMapping("/search/{userId}")
-    public List<Keyword> searchKeywords(@PathVariable int userId, @RequestParam String query) {
+    public List<Keyword> searchKeywords(@PathVariable long userId, @RequestParam String query) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 

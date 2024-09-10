@@ -1,6 +1,6 @@
 package DMU.demo.keyword.domain.entity;
 
-import DMU.demo.chat.domain.entity.User;
+import DMU.demo.user.domain.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 

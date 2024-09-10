@@ -64,7 +64,7 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             // Format message to include sender's username
             ObjectMapper mapper = new ObjectMapper();
             ChatDto chatDto = ChatDto.builder()
-                    .sender(Integer.parseInt(sender))
+                    .sender(Long.parseLong(sender))
                     .message(msg)
                     .messageDate(new Timestamp(System.currentTimeMillis()))
                     .messageTime(new Time(System.currentTimeMillis()))
@@ -89,7 +89,7 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
             if (recipient != null) {
                 ChatMessage chatMessage = ChatMessage.builder()
                         .roomId(roomId)
-                        .userId(Integer.parseInt(recipient))
+                        .userId(Long.parseLong(recipient))
                         .sender(chatDto.getSender())
                         .message(chatDto.getMessage())
                         .messageType(ChatMessage.MessageType.TALK)
