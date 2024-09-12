@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Map;
 
@@ -51,22 +52,35 @@ public class AuthController {
 
     @PostMapping("/logout")
     @ResponseBody
-    public ResponseEntity<String> kakaoLogout(@RequestBody Map<String, String> request) throws Exception {
+    public ResponseEntity<String> kakaoLogout(@RequestBody Map<String, String> request) {
         User user = userRepository.findById(Long.parseLong(request.get("userId"))).orElse(null);
 
-        if (user != null) {
-            ResponseEntity<String> response = kakaoService.postLogout(user);
-
-            if (response.getStatusCode() == HttpStatus.OK) {
-                user.setAccessToken(null);
-                user.setRefreshToken(null);
-                userRepository.save(user);
-                return ResponseEntity.ok("" + user.getUserId());
+        try {
+            if (user != null) {
+                if (user.getAccessToken() == null) {
+                    return ResponseEntity.ok("" + user.getUserId());
+                }
+                return ResponseEntity.ok(kakaoService.postLogout(user));
             } else {
-                return ResponseEntity.internalServerError().build();
+                return ResponseEntity.notFound().build();
             }
-        } else {
-            return ResponseEntity.notFound().build();
+        } catch (HttpClientErrorException e) {
+            try {
+                if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                    KakaoToken newToken = kakaoService.postRefreshToken(user.getRefreshToken());
+
+                    user.setAccessToken(newToken.getAccess_token());
+                    user.setRefreshToken(newToken.getRefresh_token());
+                    userRepository.save(user);
+
+                    return ResponseEntity.ok(kakaoService.postLogout(user));
+                } else {
+                    return ResponseEntity.internalServerError().build();
+                }
+            } catch (Exception exception) {
+                kakaoService.revokeToken(user);
+                return ResponseEntity.ok("" + user.getUserId());
+            }
         }
     }
 

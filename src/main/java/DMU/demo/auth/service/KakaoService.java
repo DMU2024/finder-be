@@ -3,6 +3,8 @@ package DMU.demo.auth.service;
 import DMU.demo.auth.dto.KakaoUserInfo;
 import DMU.demo.auth.dto.KakaoToken;
 import DMU.demo.user.domain.entity.User;
+import DMU.demo.user.domain.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -11,7 +13,10 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 @Service
+@RequiredArgsConstructor
 public class KakaoService {
+    private final UserRepository userRepository;
+
     private final static String AUTH_URI = "https://kauth.kakao.com";
     private final static String API_URI = "https://kapi.kakao.com";
 
@@ -70,24 +75,23 @@ public class KakaoService {
         }
     }
 
-    public ResponseEntity<String> postLogout(User user) throws Exception {
-        try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Authorization", "Bearer " + user.getAccessToken());
-            headers.add("Content-type", "application/x-www-form-urlencoded");
+    public String postLogout(User user) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + user.getAccessToken());
+        headers.add("Content-type", "application/x-www-form-urlencoded");
 
-            RestTemplate restTemplate = new RestTemplate();
-            HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(headers);
+        RestTemplate restTemplate = new RestTemplate();
+        HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange(
+                API_URI + "/v1/user/logout",
+                HttpMethod.POST,
+                httpEntity,
+                String.class
+        );
 
-            return restTemplate.exchange(
-                    API_URI + "/v1/user/logout",
-                    HttpMethod.POST,
-                    httpEntity,
-                    String.class
-            );
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        revokeToken(user);
+
+        return "" + user.getUserId();
     }
 
     public ResponseEntity<String> postUnlink(User user) throws Exception {
@@ -108,5 +112,38 @@ public class KakaoService {
         } catch (Exception e) {
             throw new Exception(e);
         }
+    }
+
+
+    public KakaoToken postRefreshToken(String refreshToken) throws Exception {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-type", "application/x-www-form-urlencoded");
+
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("grant_type", "refresh_token");
+            params.add("client_id", KAKAO_CLIENT_ID);
+            params.add("refresh_token", refreshToken);
+
+            RestTemplate restTemplate = new RestTemplate();
+            HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(params, headers);
+
+            ResponseEntity<KakaoToken> response = restTemplate.exchange(
+                    AUTH_URI + "/oauth/token",
+                    HttpMethod.POST,
+                    httpEntity,
+                    KakaoToken.class
+            );
+
+            return response.getBody();
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
+    public void revokeToken(User user) {
+        user.setAccessToken(null);
+        user.setRefreshToken(null);
+        userRepository.save(user);
     }
 }
