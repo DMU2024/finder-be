@@ -7,5 +7,8 @@ import java.util.List;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     UserInfoMapping findByUserId(long userId);
+
     List<UserInfoMapping> findAllBy();
+
+    User findByAccessToken(String accessToken);
 }
