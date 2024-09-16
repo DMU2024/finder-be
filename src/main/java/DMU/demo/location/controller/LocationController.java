@@ -1,9 +1,10 @@
 package DMU.demo.location.controller;
 
+import DMU.demo.location.domain.entity.Location;
+import DMU.demo.location.domain.repository.LocationInfoMapping;
+import DMU.demo.location.domain.repository.LocationRepository;
 import DMU.demo.user.domain.entity.User;
 import DMU.demo.user.domain.repository.UserRepository;
-import DMU.demo.location.domain.entity.Location;
-import DMU.demo.location.domain.repository.LocationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -21,39 +22,31 @@ public class LocationController {
     private final UserRepository userRepository;
 
     @PostMapping
-    public Location addLocation(@RequestBody Map<String, String> request) {
+    public LocationInfoMapping addLocation(@RequestBody Map<String, String> request) {
         long userId = Long.parseLong(request.get("userId"));
         String locationText = request.get("location");
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        Location location = Location.builder()
+        Location location = locationRepository.save(Location.builder()
                 .user(user)
                 .location(locationText)
-                .build();
+                .build());
 
-        return locationRepository.save(location);
+        return locationRepository.findLocationById(location.getId());
     }
 
     @GetMapping("/{userId}")
-    public List<Location> getLocationsByUser(@PathVariable long userId) {
+    public List<LocationInfoMapping> getLocationsByUser(@PathVariable long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        return locationRepository.findByUser(user);
+        return locationRepository.findAllByUser(user);
     }
 
     @DeleteMapping("/{locationId}")
     public void deleteLocation(@PathVariable int locationId) {
         locationRepository.deleteById(locationId);
-    }
-
-    @GetMapping("/search/{userId}")
-    public List<Location> searchLocations(@PathVariable long userId, @RequestParam String query) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-
-        return locationRepository.findByUserAndLocationContaining(user, query);
     }
 }

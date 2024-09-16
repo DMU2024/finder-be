@@ -7,7 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface KeywordRepository extends JpaRepository<Keyword, Integer> {
-    List<Keyword> findByUser(User user);
+    KeywordInfoMapping findKeywordById(int id);
 
-    List<Keyword> findByUserAndKeywordContaining(User user, String keyword);
+    List<KeywordInfoMapping> findAllByUser(User user);
+
+    List<Keyword> findByUser(User user);
 }
