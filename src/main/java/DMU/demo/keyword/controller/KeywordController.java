@@ -46,7 +46,8 @@ public class KeywordController {
     }
 
     @DeleteMapping("/{keywordId}")
-    public void deleteKeyword(@PathVariable int keywordId) {
+    public int deleteKeyword(@PathVariable int keywordId) {
         keywordRepository.deleteById(keywordId);
+        return keywordId;
     }
 }
