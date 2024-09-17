@@ -46,7 +46,8 @@ public class LocationController {
     }
 
     @DeleteMapping("/{locationId}")
-    public void deleteLocation(@PathVariable int locationId) {
+    public int deleteLocation(@PathVariable int locationId) {
         locationRepository.deleteById(locationId);
+        return locationId;
     }
 }
