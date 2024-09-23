@@ -1,7 +1,7 @@
 package DMU.demo.auth.controller;
 
-import DMU.demo.auth.dto.KakaoToken;
-import DMU.demo.auth.service.KakaoService;
+import DMU.demo.kakao.dto.KakaoToken;
+import DMU.demo.kakao.service.KakaoService;
 import DMU.demo.user.domain.entity.User;
 import DMU.demo.user.domain.repository.UserInfoMapping;
 import DMU.demo.user.domain.repository.UserRepository;
