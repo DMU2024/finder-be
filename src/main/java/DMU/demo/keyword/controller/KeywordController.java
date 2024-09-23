@@ -1,5 +1,6 @@
 package DMU.demo.keyword.controller;
 
+import DMU.demo.kakao.service.KakaoService;
 import DMU.demo.keyword.domain.entity.Keyword;
 import DMU.demo.keyword.domain.repository.KeywordInfoMapping;
 import DMU.demo.keyword.domain.repository.KeywordRepository;
@@ -20,6 +21,7 @@ import java.util.Map;
 public class KeywordController {
     private final KeywordRepository keywordRepository;
     private final UserRepository userRepository;
+    private final KakaoService kakaoService;
 
     @PostMapping
     public KeywordInfoMapping addKeyword(@RequestBody Map<String, String> request) {
@@ -35,6 +37,14 @@ public class KeywordController {
                 .build());
 
         return keywordRepository.findKeywordById(keyword.getId());
+    }
+
+    @PostMapping("/{userId}")
+    public String postSendMessage(@PathVariable long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        return kakaoService.postSendMessage(user, "테스트");
     }
 
     @GetMapping("/{userId}")
