@@ -11,17 +11,21 @@ import DMU.demo.user.domain.repository.UserInfoMapping;
 import DMU.demo.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
@@ -83,6 +87,9 @@ public class KakaoService {
 
     @Value("${kakao.callback}")
     private String KAKAO_CALLBACK;
+
+    @Value("${kakao.web_url}")
+    private String KAKAO_WEB_URL;
 
     public KakaoToken postKakaoAuth(String code) {
         ResponseEntity<KakaoToken> response = authClient.post()
@@ -173,5 +180,25 @@ public class KakaoService {
         user.setAccessToken(null);
         user.setRefreshToken(null);
         userRepository.save(user);
+    }
+
+    public String postSendMessage(User user, String message) {
+        JSONObject templateObject = new JSONObject(Map.of(
+                "object_type", "text",
+                "text", message,
+                "link", new JSONObject(Map.of("web_url", KAKAO_WEB_URL))
+        ));
+
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("template_object", templateObject.toString());
+
+        ResponseEntity<String> response = apiClient.post()
+                .uri("v2/api/talk/memo/default/send")
+                .header("Authorization", "Bearer " + user.getAccessToken())
+                .body(formData)
+                .retrieve()
+                .toEntity(String.class);
+
+        return response.getBody();
     }
 }
