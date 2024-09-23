@@ -12,10 +12,7 @@ import DMU.demo.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
@@ -37,12 +34,12 @@ public class KakaoService {
 
     private final RestClient authClient = RestClient.builder()
             .baseUrl("https://kauth.kakao.com")
-            .defaultHeader("Content-type", "application/x-www-form-urlencoded")
+            .defaultHeaders(httpHeaders -> httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED))
             .build();
 
     private final RestClient apiClient = RestClient.builder()
             .baseUrl("https://kapi.kakao.com")
-            .defaultHeader("Content-type", "application/x-www-form-urlencoded")
+            .defaultHeaders(httpHeaders -> httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED))
             .requestInterceptor(new RequestInterceptor())
             .build();
 
@@ -67,7 +64,9 @@ public class KakaoService {
                         KakaoToken newToken = postRefreshToken(user.getRefreshToken());
 
                         user.setAccessToken(newToken.getAccess_token());
-                        user.setRefreshToken(newToken.getRefresh_token());
+                        if (newToken.getRefresh_token() != null) {
+                            user.setRefreshToken(newToken.getRefresh_token());
+                        }
                         userRepository.save(user);
 
                         request.getHeaders().set("Authorization", "Bearer " + newToken.getAccess_token());
