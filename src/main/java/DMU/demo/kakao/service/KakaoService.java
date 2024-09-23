@@ -1,9 +1,9 @@
-package DMU.demo.auth.service;
+package DMU.demo.kakao.service;
 
-import DMU.demo.auth.dto.KakaoToken;
-import DMU.demo.auth.dto.KakaoTokenInfo;
-import DMU.demo.auth.dto.KakaoUserInfo;
-import DMU.demo.auth.dto.KakaoUserProperties;
+import DMU.demo.kakao.dto.KakaoToken;
+import DMU.demo.kakao.dto.KakaoTokenInfo;
+import DMU.demo.kakao.dto.KakaoUserInfo;
+import DMU.demo.kakao.dto.KakaoUserProperties;
 import DMU.demo.keyword.domain.repository.KeywordRepository;
 import DMU.demo.location.domain.repository.LocationRepository;
 import DMU.demo.user.domain.entity.User;

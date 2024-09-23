@@ -1,4 +1,4 @@
-package DMU.demo.auth.dto;
+package DMU.demo.kakao.dto;
 
 import lombok.Builder;
 import lombok.Data;
