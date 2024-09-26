@@ -3,34 +3,20 @@ package DMU.demo.chat.controller;
 import DMU.demo.chat.domain.entity.ChatMessage;
 import DMU.demo.chat.domain.repository.ChatRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @CrossOrigin(origins = "*")
 @RestController
+@RequestMapping("/chat")
 @RequiredArgsConstructor
 public class ChatController {
     private final ChatRepository chatRepository;
 
-    @GetMapping("/chat/messages")
+    @GetMapping("/messages")
     public List<ChatMessage> getMessages(@RequestParam String roomId) {
         return chatRepository.findByRoomId(roomId);
-    }
-
-    @GetMapping("/chat/room")
-    public String chatRoom(@RequestParam String userId, Model model) {
-        model.addAttribute("userId", userId);
-        return "chat_room";
-    }
-
-    @GetMapping("/chat")
-    public String userList() {
-        return "user_list";
     }
 }
 
