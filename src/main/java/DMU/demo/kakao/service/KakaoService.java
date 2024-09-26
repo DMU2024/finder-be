@@ -1,11 +1,11 @@
 package DMU.demo.kakao.service;
 
+import DMU.demo.bookmark.domain.repository.BookmarkRepository;
 import DMU.demo.kakao.dto.KakaoToken;
 import DMU.demo.kakao.dto.KakaoTokenInfo;
 import DMU.demo.kakao.dto.KakaoUserInfo;
 import DMU.demo.kakao.dto.KakaoUserProperties;
 import DMU.demo.keyword.domain.repository.KeywordRepository;
-import DMU.demo.location.domain.repository.LocationRepository;
 import DMU.demo.user.domain.entity.User;
 import DMU.demo.user.domain.repository.UserInfoMapping;
 import DMU.demo.user.domain.repository.UserRepository;
@@ -34,7 +34,7 @@ import java.util.Objects;
 public class KakaoService {
     private final UserRepository userRepository;
     private final KeywordRepository keywordRepository;
-    private final LocationRepository locationRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     private final RestClient authClient = RestClient.builder()
             .baseUrl("https://kauth.kakao.com")
@@ -170,7 +170,7 @@ public class KakaoService {
                 .toEntity(String.class);
 
         keywordRepository.deleteAll(keywordRepository.findByUser(user));
-        locationRepository.deleteAll(locationRepository.findByUser(user));
+        bookmarkRepository.deleteAll(bookmarkRepository.findByUser(user));
         userRepository.delete(user);
 
         return "" + user.getUserId();

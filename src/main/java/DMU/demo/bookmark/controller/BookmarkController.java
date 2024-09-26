@@ -1,8 +1,8 @@
-package DMU.demo.location.controller;
+package DMU.demo.bookmark.controller;
 
-import DMU.demo.location.domain.entity.Location;
-import DMU.demo.location.domain.repository.LocationInfoMapping;
-import DMU.demo.location.domain.repository.LocationRepository;
+import DMU.demo.bookmark.domain.entity.Bookmark;
+import DMU.demo.bookmark.domain.repository.BookmarkInfoMapping;
+import DMU.demo.bookmark.domain.repository.BookmarkRepository;
 import DMU.demo.user.domain.entity.User;
 import DMU.demo.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,39 +15,39 @@ import java.util.Map;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/locations")
+@RequestMapping("/bookmarks")
 @RequiredArgsConstructor
-public class LocationController {
-    private final LocationRepository locationRepository;
+public class BookmarkController {
+    private final BookmarkRepository bookmarkRepository;
     private final UserRepository userRepository;
 
     @PostMapping
-    public LocationInfoMapping addLocation(@RequestBody Map<String, String> request) {
+    public BookmarkInfoMapping addLocation(@RequestBody Map<String, String> request) {
         long userId = Long.parseLong(request.get("userId"));
         String locationText = request.get("location");
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        Location location = locationRepository.save(Location.builder()
+        Bookmark location = bookmarkRepository.save(Bookmark.builder()
                 .user(user)
                 .location(locationText)
                 .build());
 
-        return locationRepository.findLocationById(location.getId());
+        return bookmarkRepository.findBookmarkById(location.getId());
     }
 
     @GetMapping("/{userId}")
-    public List<LocationInfoMapping> getLocationsByUser(@PathVariable long userId) {
+    public List<BookmarkInfoMapping> getLocationsByUser(@PathVariable long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        return locationRepository.findAllByUser(user);
+        return bookmarkRepository.findAllByUser(user);
     }
 
     @DeleteMapping("/{locationId}")
     public int deleteLocation(@PathVariable int locationId) {
-        locationRepository.deleteById(locationId);
+        bookmarkRepository.deleteById(locationId);
         return locationId;
     }
 }
