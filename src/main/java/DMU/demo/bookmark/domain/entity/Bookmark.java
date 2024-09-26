@@ -1,4 +1,4 @@
-package DMU.demo.location.domain.entity;
+package DMU.demo.bookmark.domain.entity;
 
 import DMU.demo.user.domain.entity.User;
 import jakarta.persistence.*;
@@ -10,8 +10,8 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "locations")
-public class Location {
+@Table(name = "bookmark")
+public class Bookmark {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
