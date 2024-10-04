@@ -1,9 +1,7 @@
 package DMU.demo.keyword.controller;
 
-import DMU.demo.kakao.service.KakaoService;
-import DMU.demo.keyword.domain.entity.Keyword;
 import DMU.demo.keyword.domain.repository.KeywordInfoMapping;
-import DMU.demo.keyword.domain.repository.KeywordRepository;
+import DMU.demo.keyword.service.KeywordService;
 import DMU.demo.user.domain.entity.User;
 import DMU.demo.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +17,8 @@ import java.util.Map;
 @RequestMapping("/keywords")
 @RequiredArgsConstructor
 public class KeywordController {
-    private final KeywordRepository keywordRepository;
     private final UserRepository userRepository;
-    private final KakaoService kakaoService;
+    private final KeywordService keywordService;
 
     @PostMapping
     public KeywordInfoMapping addKeyword(@RequestBody Map<String, String> request) {
@@ -31,20 +28,7 @@ public class KeywordController {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        Keyword keyword = keywordRepository.save(Keyword.builder()
-                .user(user)
-                .keyword(keywordText)
-                .build());
-
-        return keywordRepository.findKeywordById(keyword.getId());
-    }
-
-    @PostMapping("/{userId}")
-    public String postSendMessage(@PathVariable long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-
-        return kakaoService.postSendMessage(user, "테스트");
+        return keywordService.addKeyword(user, keywordText);
     }
 
     @GetMapping("/{userId}")
@@ -52,12 +36,11 @@ public class KeywordController {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        return keywordRepository.findAllByUser(user);
+        return keywordService.getKeywordsByUser(user);
     }
 
     @DeleteMapping("/{keywordId}")
     public int deleteKeyword(@PathVariable int keywordId) {
-        keywordRepository.deleteById(keywordId);
-        return keywordId;
+        return keywordService.deleteKeyword(keywordId);
     }
 }

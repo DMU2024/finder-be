@@ -182,11 +182,16 @@ public class KakaoService {
         userRepository.save(user);
     }
 
-    public String postSendMessage(User user, String message) {
+    public String postSendMessage(User user, String message, String image, String id) {
         JSONObject templateObject = new JSONObject(Map.of(
-                "object_type", "text",
-                "text", message,
-                "link", new JSONObject(Map.of("web_url", KAKAO_WEB_URL))
+                "object_type", "feed",
+                "content", new JSONObject(Map.of(
+                        "title", message,
+                        "image_url", image,
+                        "image_width", 640,
+                        "image_height", 640,
+                        "link", new JSONObject(Map.of("web_url", KAKAO_WEB_URL + "/detail/" + id))
+                ))
         ));
 
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();

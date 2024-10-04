@@ -73,7 +73,7 @@ public class LostFoundService {
                     Node childNode = childNodes.item(i);
                     itemMap.put(childNode.getNodeName(), childNode.getTextContent());
                 }
-                
+
                 return LostFoundDetail.builder()
                         .atcId(itemMap.get("atcId"))
                         .csteSteNm(itemMap.get("csteSteNm"))
@@ -104,5 +104,10 @@ public class LostFoundService {
 
     public List<LostFound> getLostFoundsByPlace(String keyword, int page) {
         return lostFoundRepository.findByDepPlace(keyword, PageRequest.of(page, 5));
+    }
+
+    public List<LostFound> getLostFoundsByAtcId(String atcId, String keyword) {
+        TextCriteria criteria = TextCriteria.forDefaultLanguage().matchingAny(keyword);
+        return lostFoundRepository.findByAtcIdGreaterThanEqual(atcId, criteria);
     }
 }

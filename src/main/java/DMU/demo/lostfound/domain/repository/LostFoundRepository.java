@@ -17,4 +17,7 @@ public interface LostFoundRepository extends MongoRepository<LostFound, String> 
 
     @Query(sort = "{_id:-1}")
     List<LostFound> findByDepPlace(String depPlace, Pageable pageable);
+
+    @Query(sort = "{_id:-1}")
+    List<LostFound> findByAtcIdGreaterThanEqual(String atcId, TextCriteria criteria);
 }
