@@ -1,10 +1,7 @@
 package DMU.demo.kakao.service;
 
 import DMU.demo.bookmark.domain.repository.BookmarkRepository;
-import DMU.demo.kakao.dto.KakaoToken;
-import DMU.demo.kakao.dto.KakaoTokenInfo;
-import DMU.demo.kakao.dto.KakaoUserInfo;
-import DMU.demo.kakao.dto.KakaoUserProperties;
+import DMU.demo.kakao.dto.*;
 import DMU.demo.keyword.domain.repository.KeywordRepository;
 import DMU.demo.user.domain.entity.User;
 import DMU.demo.user.domain.repository.UserInfoMapping;
@@ -24,9 +21,11 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -182,6 +181,31 @@ public class KakaoService {
         userRepository.save(user);
     }
 
+    public KakaoScopeInfo getScopeInfo(User user) {
+        ResponseEntity<KakaoScopeInfo> response = apiClient.get()
+                .uri("/v2/user/scopes")
+                .header("Authorization", "Bearer " + user.getAccessToken())
+                .retrieve()
+                .toEntity(KakaoScopeInfo.class);
+
+        return response.getBody();
+    }
+
+    public KakaoScopeInfo postRevokeScope(User user, String[] scopes) {
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("scopes", "[" + Arrays.stream(scopes)
+                .map(scope -> "\"" + scope + "\"").collect(Collectors.joining(",")) + "]");
+
+        ResponseEntity<KakaoScopeInfo> response = apiClient.post()
+                .uri("/v2/user/revoke/scopes")
+                .header("Authorization", "Bearer " + user.getAccessToken())
+                .body(formData)
+                .retrieve()
+                .toEntity(KakaoScopeInfo.class);
+
+        return response.getBody();
+    }
+
     public String postSendMessage(User user, String message, String image, String id) {
         JSONObject templateObject = new JSONObject(Map.of(
                 "object_type", "feed",
@@ -198,7 +222,7 @@ public class KakaoService {
         formData.add("template_object", templateObject.toString());
 
         ResponseEntity<String> response = apiClient.post()
-                .uri("v2/api/talk/memo/default/send")
+                .uri("/v2/api/talk/memo/default/send")
                 .header("Authorization", "Bearer " + user.getAccessToken())
                 .body(formData)
                 .retrieve()
