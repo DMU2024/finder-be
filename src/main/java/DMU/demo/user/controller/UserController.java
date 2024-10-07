@@ -1,12 +1,10 @@
 package DMU.demo.user.controller;
 
-import DMU.demo.user.domain.entity.User;
+import DMU.demo.kakao.dto.KakaoScopeInfo;
 import DMU.demo.user.domain.repository.UserInfoMapping;
-import DMU.demo.user.domain.repository.UserRepository;
+import DMU.demo.user.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
@@ -16,15 +14,26 @@ import java.util.Map;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @GetMapping("/{id}")
     public UserInfoMapping getUserById(@PathVariable long id) {
-        return userRepository.findByUserId(id);
+        return userService.getUser(id);
     }
 
     @GetMapping
     public List<UserInfoMapping> getUsers() {
-        return userRepository.findAllBy();
+        return userService.getUsers();
+    }
+
+    @GetMapping("/scopes/{id}")
+    public KakaoScopeInfo getScopesById(@PathVariable long id) {
+        return userService.getKakaoScopes(id);
+    }
+
+    @PostMapping("/scopes/{id}")
+    public KakaoScopeInfo postRevokeScopesById(@PathVariable long id, @RequestBody Map<String, String> request) {
+        String[] scopes = request.get("scopes").split(",");
+        return userService.postRevokeKakaoScopes(id, scopes);
     }
 }
