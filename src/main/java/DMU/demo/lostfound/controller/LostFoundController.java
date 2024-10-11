@@ -26,8 +26,13 @@ public class LostFoundController {
     }
 
     @GetMapping("/search")
-    public List<LostFound> searchLostFounds(String keyword, int page) {
-        return lostFoundService.searchLostFounds(keyword, page);
+    public List<LostFound> searchLostFounds(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String startYmd,
+            @RequestParam(required = false) String endYmd,
+            @RequestParam(required = false) String category,
+            int page) {
+        return lostFoundService.searchLostFounds(keyword, startYmd, endYmd, category, page);
     }
 
     @GetMapping("/place")
