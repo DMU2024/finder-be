@@ -7,9 +7,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClient;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -29,6 +34,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class LostFoundService {
     private final LostFoundRepository lostFoundRepository;
+    private final MongoTemplate mongoTemplate;
 
     private final RestClient apiClient = RestClient.builder()
             .baseUrl("http://apis.data.go.kr/1320000")
@@ -97,9 +103,36 @@ public class LostFoundService {
         }
     }
 
-    public List<LostFound> searchLostFounds(String keyword, int page) {
-        TextCriteria criteria = TextCriteria.forDefaultLanguage().matchingAny(keyword);
-        return lostFoundRepository.findBy(criteria, PageRequest.of(page, 5));
+    public List<LostFound> searchLostFounds(String keyword, String startYmd, String endYmd, String category, int page) {
+        Query query = new Query()
+                .with(PageRequest.of(page, 5))
+                .with(Sort.by(Sort.Direction.DESC, "_id"));
+
+        if (StringUtils.hasText(keyword)) {
+            query.addCriteria(TextCriteria.forDefaultLanguage().matchingAny(keyword));
+        }
+
+        // 날짜 검색의 경우, 습득물이 등록된 날짜 기준으로 검색
+        if (StringUtils.hasText(startYmd)) {
+            startYmd = "F" + String.join("", startYmd.split("-")) + "00000001";
+        }
+        if (StringUtils.hasText(endYmd)) {
+            endYmd = "F" + String.join("", endYmd.split("-")) + "00000001";
+        }
+        
+        if (StringUtils.hasText(startYmd) && !StringUtils.hasText(endYmd)) {
+            query.addCriteria(Criteria.where("atcId").gte(startYmd));
+        } else if (!StringUtils.hasText(startYmd) && StringUtils.hasText(endYmd)) {
+            query.addCriteria(Criteria.where("atcId").lte(endYmd));
+        } else if (StringUtils.hasText(startYmd) && StringUtils.hasText(endYmd)) {
+            query.addCriteria(Criteria.where("atcId").gte(startYmd).lte(endYmd));
+        }
+
+        if (StringUtils.hasText(category)) {
+            query.addCriteria(Criteria.where("prdtClNm").is(category));
+        }
+
+        return mongoTemplate.find(query, LostFound.class);
     }
 
     public List<LostFound> getLostFoundsByPlace(String keyword, int page) {

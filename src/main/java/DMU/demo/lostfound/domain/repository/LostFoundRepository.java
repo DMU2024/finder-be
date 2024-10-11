@@ -13,9 +13,6 @@ public interface LostFoundRepository extends MongoRepository<LostFound, String> 
     List<LostFound> findBy(Pageable pageable);
 
     @Query(sort = "{_id:-1}")
-    List<LostFound> findBy(TextCriteria criteria, Pageable pageable);
-
-    @Query(sort = "{_id:-1}")
     List<LostFound> findByDepPlace(String depPlace, Pageable pageable);
 
     @Query(sort = "{_id:-1}")
