@@ -32,6 +32,7 @@ public class LostGoodsController {
                 .info(request.get("info"))
                 .lat(Float.parseFloat(request.get("lat")))
                 .lng(Float.parseFloat(request.get("lng")))
+                .userId(Long.parseLong(request.get("userId")))
                 .build());
     }
 }
