@@ -18,5 +18,6 @@ public class LostGoods {
     private String info;
     private float lat;
     private float lng;
+    private long userId;
 }
 
