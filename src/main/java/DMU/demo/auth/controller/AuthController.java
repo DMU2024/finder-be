@@ -23,7 +23,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<UserInfoMapping> kakaoLogin(@RequestBody Map<String, String> request) {
-        KakaoToken kakaoToken = kakaoService.postKakaoAuth(request.get("code"));
+        boolean isDev = Boolean.parseBoolean(request.get("isDev"));
+        KakaoToken kakaoToken = kakaoService.postKakaoAuth(request.get("code"), isDev);
 
         try {
             return ResponseEntity.ok(kakaoService.postLogin(kakaoToken));

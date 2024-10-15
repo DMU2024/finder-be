@@ -90,13 +90,19 @@ public class KakaoService {
     @Value("${kakao.web_url}")
     private String KAKAO_WEB_URL;
 
-    public KakaoToken postKakaoAuth(String code) {
+    @Value("${kakao.dev.callback}")
+    private String KAKAO_DEV_CALLBACK;
+
+    @Value("${kakao.dev.web_url}")
+    private String KAKAO_DEV_WEB_URL;
+
+    public KakaoToken postKakaoAuth(String code, boolean isDev) {
         ResponseEntity<KakaoToken> response = authClient.post()
                 .uri(uriBuilder -> uriBuilder.path("/oauth/token")
                         .queryParam("grant_type", "authorization_code")
                         .queryParam("client_id", KAKAO_CLIENT_ID)
                         .queryParam("code", code)
-                        .queryParam("redirect_uri", KAKAO_CALLBACK)
+                        .queryParam("redirect_uri", isDev ? KAKAO_DEV_CALLBACK : KAKAO_CALLBACK)
                         .build())
                 .retrieve()
                 .toEntity(KakaoToken.class);
