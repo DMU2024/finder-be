@@ -212,7 +212,7 @@ public class KakaoService {
         return response.getBody();
     }
 
-    public String postSendMessage(User user, String message, String image, String id) {
+    public void postSendMessage(User user, String message, String image, String id) {
         JSONObject templateObject = new JSONObject(Map.of(
                 "object_type", "feed",
                 "content", new JSONObject(Map.of(
@@ -220,20 +220,28 @@ public class KakaoService {
                         "image_url", image,
                         "image_width", 640,
                         "image_height", 640,
-                        "link", new JSONObject(Map.of("web_url", KAKAO_WEB_URL + "/detail/" + id))
+                        "link", new JSONObject(Map.of(
+                                "web_url", KAKAO_WEB_URL + "/detail/" + id,
+                                "mobile_web_url", KAKAO_WEB_URL + "/detail/" + id
+                        ))
                 ))
         ));
 
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("template_object", templateObject.toString());
 
-        ResponseEntity<String> response = apiClient.post()
-                .uri("/v2/api/talk/memo/default/send")
-                .header("Authorization", "Bearer " + user.getAccessToken())
-                .body(formData)
-                .retrieve()
-                .toEntity(String.class);
+        try {
+            apiClient.post()
+                    .uri("/v2/api/talk/memo/default/send")
+                    .header("Authorization", "Bearer " + user.getAccessToken())
+                    .body(formData)
+                    .retrieve()
+                    .toEntity(String.class);
 
-        return response.getBody();
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                log.warn(e.getMessage() + " " + user.getUserId());
+            }
+        }
     }
 }
