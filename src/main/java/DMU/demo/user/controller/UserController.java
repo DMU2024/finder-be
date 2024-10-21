@@ -6,7 +6,6 @@ import DMU.demo.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @CrossOrigin(origins = "*")
@@ -19,11 +18,6 @@ public class UserController {
     @GetMapping("/{id}")
     public UserInfoMapping getUserById(@PathVariable long id) {
         return userService.getUser(id);
-    }
-
-    @GetMapping
-    public List<UserInfoMapping> getUsers() {
-        return userService.getUsers();
     }
 
     @GetMapping("/scopes/{id}")
