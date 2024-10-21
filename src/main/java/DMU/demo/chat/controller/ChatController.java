@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -23,6 +24,14 @@ public class ChatController {
     @GetMapping("/messages")
     public List<ChatMessage> getMessages(@RequestParam String roomId) {
         return chatService.getMessages(roomId);
+    }
+
+    @PostMapping
+    public ChatMessage createChatRoom(@RequestBody Map<String, String> request) {
+        String userId = request.get("userId");
+        String targetId = request.get("targetId");
+
+        return chatService.createChatRoom(userId, targetId);
     }
 }
 
