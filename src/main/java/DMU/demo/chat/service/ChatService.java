@@ -8,8 +8,10 @@ import DMU.demo.user.domain.entity.User;
 import DMU.demo.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -18,7 +20,7 @@ public class ChatService {
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;
 
-    public List<ChatHistory> getHistories(@RequestParam String userId) {
+    public List<ChatHistory> getHistories(String userId) {
         List<ChatRoomIdMapping> rooms = chatRepository.findDistinctByRoomIdContaining(userId);
 
         return rooms.stream()
@@ -39,7 +41,23 @@ public class ChatService {
                 .toList();
     }
 
-    public List<ChatMessage> getMessages(@RequestParam String roomId) {
+    public List<ChatMessage> getMessages(String roomId) {
         return chatRepository.findByRoomId(roomId);
+    }
+
+    public ChatMessage createChatRoom(String userId, String targetId) {
+        String[] users = {userId, targetId};
+        Arrays.sort(users);
+        String roomId = String.join("_", users);
+
+        return chatRepository.save(ChatMessage.builder()
+                .roomId(roomId)
+                .userId(Long.parseLong(targetId))
+                .sender(Long.parseLong(userId))
+                .message("")
+                .messageType(ChatMessage.MessageType.ENTER)
+                .messageDate(new Timestamp(System.currentTimeMillis()))
+                .messageTime(new Time(System.currentTimeMillis()))
+                .build());
     }
 }
