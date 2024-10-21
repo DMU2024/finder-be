@@ -6,9 +6,9 @@ import DMU.demo.user.domain.entity.User;
 import DMU.demo.user.domain.repository.UserInfoMapping;
 import DMU.demo.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -17,17 +17,18 @@ public class UserService {
     private final KakaoService kakaoService;
 
     public UserInfoMapping getUser(long id) {
-        return userRepository.findByUserId(id);
-    }
+        UserInfoMapping user = userRepository.findByUserId(id);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
 
-    public List<UserInfoMapping> getUsers() {
-        return userRepository.findAllBy();
+        return user;
     }
 
     public KakaoScopeInfo getKakaoScopes(long id) {
         User user = userRepository.findById(id).orElse(null);
         if (user == null) {
-            throw new RuntimeException("User not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
         return kakaoService.getScopeInfo(user);
@@ -36,7 +37,7 @@ public class UserService {
     public KakaoScopeInfo postRevokeKakaoScopes(long id, String[] scopes) {
         User user = userRepository.findById(id).orElse(null);
         if (user == null) {
-            throw new RuntimeException("User not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
         return kakaoService.postRevokeScope(user, scopes);
