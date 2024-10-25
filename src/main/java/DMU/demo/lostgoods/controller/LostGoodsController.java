@@ -1,9 +1,8 @@
 package DMU.demo.lostgoods.controller;
 
 import DMU.demo.lostgoods.domain.entity.LostGoods;
-import DMU.demo.lostgoods.domain.repository.LostGoodsRepository;
+import DMU.demo.lostgoods.service.LostGoodsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,17 +13,16 @@ import java.util.Map;
 @RequestMapping("/lostgoods")
 @RequiredArgsConstructor
 public class LostGoodsController {
-    private final LostGoodsRepository lostGoodsRepository;
+    private final LostGoodsService lostGoodsService;
 
     @GetMapping
-    public List<LostGoods> getPlacesByCoords(float lat_gte, float lng_gte, float lat_lte, float lng_lte) {
-        Sort sort = Sort.by(Sort.Order.desc("lat"), Sort.Order.asc("lng"));
-        return lostGoodsRepository.findLostGoodsBy(lat_gte, lng_gte, lat_lte, lng_lte, sort);
+    public List<LostGoods> getLostGoodsByCoords(float lat_gte, float lng_gte, float lat_lte, float lng_lte) {
+        return lostGoodsService.getLostGoodsByCoords(lat_gte, lng_gte, lat_lte, lng_lte);
     }
 
     @PostMapping
     public LostGoods postLostGoods(@RequestBody Map<String, String> request) {
-        return lostGoodsRepository.save(LostGoods.builder()
+        return lostGoodsService.postLostGoods(LostGoods.builder()
                 .name(request.get("name"))
                 .date(request.get("date"))
                 .address(request.get("address"))
@@ -34,5 +32,10 @@ public class LostGoodsController {
                 .lng(Float.parseFloat(request.get("lng")))
                 .userId(Long.parseLong(request.get("userId")))
                 .build());
+    }
+
+    @DeleteMapping("{id}")
+    public LostGoods deleteLostGoodsById(@PathVariable String id) {
+        return lostGoodsService.deleteLostGoodsById(id);
     }
 }

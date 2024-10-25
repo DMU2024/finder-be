@@ -1,11 +1,14 @@
 package DMU.demo.user.controller;
 
 import DMU.demo.kakao.dto.KakaoScopeInfo;
+import DMU.demo.lostgoods.domain.entity.LostGoods;
+import DMU.demo.lostgoods.service.LostGoodsService;
 import DMU.demo.user.domain.repository.UserInfoMapping;
 import DMU.demo.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin(origins = "*")
@@ -14,10 +17,16 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final LostGoodsService lostGoodsService;
 
     @GetMapping("/{id}")
     public UserInfoMapping getUserById(@PathVariable long id) {
         return userService.getUser(id);
+    }
+
+    @GetMapping("/{id}/lostgoods")
+    public List<LostGoods> getLostGoodsByUserId(@PathVariable long id) {
+        return lostGoodsService.getLostGoodsByUserId(id);
     }
 
     @GetMapping("/scopes/{id}")
