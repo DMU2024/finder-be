@@ -10,4 +10,9 @@ import java.util.List;
 public interface LostGoodsRepository extends MongoRepository<LostGoods, String> {
     @Query("{ 'lat' : { '$gte' : ?0, '$lte' : ?2 }, 'lng' : { '$gte' : ?1, '$lte' : ?3 }}")
     List<LostGoods> findLostGoodsBy(float lat_gte, float lng_gte, float lat_lte, float lng_lte, Sort sort);
+
+    @Query(sort = "{_id:-1}")
+    List<LostGoods> findLostGoodsByUserId(long userId);
+
+    LostGoods deleteLostGoodsBy_id(String id);
 }
