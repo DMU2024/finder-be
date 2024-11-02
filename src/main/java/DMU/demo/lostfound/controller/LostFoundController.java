@@ -31,8 +31,9 @@ public class LostFoundController {
             @RequestParam(required = false) String startYmd,
             @RequestParam(required = false) String endYmd,
             @RequestParam(required = false) String category,
+            @RequestParam(required = false) String color,
             int page) {
-        return lostFoundService.searchLostFounds(keyword, startYmd, endYmd, category, page);
+        return lostFoundService.searchLostFounds(keyword, startYmd, endYmd, category, color, page);
     }
 
     @GetMapping("/place")
