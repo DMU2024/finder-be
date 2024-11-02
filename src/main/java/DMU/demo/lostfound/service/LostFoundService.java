@@ -103,7 +103,7 @@ public class LostFoundService {
         }
     }
 
-    public List<LostFound> searchLostFounds(String keyword, String startYmd, String endYmd, String category, int page) {
+    public List<LostFound> searchLostFounds(String keyword, String startYmd, String endYmd, String category, String color, int page) {
         Query query = new Query()
                 .with(PageRequest.of(page, 5))
                 .with(Sort.by(Sort.Direction.DESC, "_id"));
@@ -117,9 +117,9 @@ public class LostFoundService {
             startYmd = "F" + String.join("", startYmd.split("-")) + "00000001";
         }
         if (StringUtils.hasText(endYmd)) {
-            endYmd = "F" + String.join("", endYmd.split("-")) + "00000001";
+            endYmd = "F" + String.join("", endYmd.split("-")) + "99999999";
         }
-        
+
         if (StringUtils.hasText(startYmd) && !StringUtils.hasText(endYmd)) {
             query.addCriteria(Criteria.where("atcId").gte(startYmd));
         } else if (!StringUtils.hasText(startYmd) && StringUtils.hasText(endYmd)) {
@@ -129,7 +129,15 @@ public class LostFoundService {
         }
 
         if (StringUtils.hasText(category)) {
-            query.addCriteria(Criteria.where("prdtClNm").is(category));
+            if (category.contains(">")) {
+                query.addCriteria(Criteria.where("prdtClNm").is(category));
+            } else {
+                query.addCriteria(Criteria.where("prdtClNm").regex("^" + category, "i"));
+            }
+        }
+
+        if (StringUtils.hasText(color)) {
+            query.addCriteria(Criteria.where("clrNm").is(color));
         }
 
         return mongoTemplate.find(query, LostFound.class);
