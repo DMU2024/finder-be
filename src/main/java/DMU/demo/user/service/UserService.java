@@ -25,20 +25,26 @@ public class UserService {
         return user;
     }
 
+    public UserInfoMapping postUserSetting(long id, boolean notifyOnlyBookmarked) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        user.setNotifyOnlyBookmarked(notifyOnlyBookmarked);
+        userRepository.save(user);
+
+        return userRepository.findByUserId(user.getUserId());
+    }
+
     public KakaoScopeInfo getKakaoScopes(long id) {
-        User user = userRepository.findById(id).orElse(null);
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         return kakaoService.getScopeInfo(user);
     }
 
     public KakaoScopeInfo postRevokeKakaoScopes(long id, String[] scopes) {
-        User user = userRepository.findById(id).orElse(null);
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         return kakaoService.postRevokeScope(user, scopes);
     }
