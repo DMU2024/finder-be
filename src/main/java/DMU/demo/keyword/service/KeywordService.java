@@ -1,5 +1,7 @@
 package DMU.demo.keyword.service;
 
+import DMU.demo.bookmark.dto.BookmarkDto;
+import DMU.demo.bookmark.service.BookmarkService;
 import DMU.demo.kakao.service.KakaoService;
 import DMU.demo.keyword.domain.entity.Keyword;
 import DMU.demo.keyword.domain.repository.KeywordInfoMapping;
@@ -25,6 +27,8 @@ public class KeywordService {
     private final KeywordRepository keywordRepository;
     private final LostFoundService lostFoundService;
     private final KakaoService kakaoService;
+    private final BookmarkService bookmarkService;
+
 
     public KeywordInfoMapping addKeyword(User user, String keywordText) {
         Keyword keyword = keywordRepository.save(Keyword.builder()
@@ -64,6 +68,15 @@ public class KeywordService {
                     for (User user : entry.getValue()) {
                         if (user.getAccessToken() == null || user.getRefreshToken() == null)
                             continue;
+
+                        if (user.isNotifyOnlyBookmarked()) {
+                            List<BookmarkDto> bookmarks = bookmarkService.getLocationsByUser(user.getUserId());
+                            List<String> locations = bookmarks.stream().map(BookmarkDto::getLocation).toList();
+
+                            if (!locations.contains(lostfound.getDepPlace())) {
+                                continue;
+                            }
+                        }
 
                         kakaoService.postSendMessage(user, message, image, id);
                     }

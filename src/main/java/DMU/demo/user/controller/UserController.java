@@ -24,6 +24,12 @@ public class UserController {
         return userService.getUser(id);
     }
 
+    @PostMapping("/{id}")
+    public UserInfoMapping postUserSettingById(@PathVariable long id, @RequestBody Map<String, String> request) {
+        boolean notifyOnlyBookmarked = request.get("notifyOnlyBookmarked").equals("true");
+        return userService.postUserSetting(id, notifyOnlyBookmarked);
+    }
+
     @GetMapping("/{id}/lostgoods")
     public List<LostGoods> getLostGoodsByUserId(@PathVariable long id) {
         return lostGoodsService.getLostGoodsByUserId(id);
