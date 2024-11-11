@@ -3,6 +3,8 @@ package DMU.demo.lostfound.service;
 import DMU.demo.lostfound.domain.entity.LostFound;
 import DMU.demo.lostfound.domain.repository.LostFoundRepository;
 import DMU.demo.lostfound.dto.LostFoundDetail;
+import DMU.demo.place.domain.entity.Place;
+import DMU.demo.place.domain.repository.PlaceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +36,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class LostFoundService {
     private final LostFoundRepository lostFoundRepository;
+    private final PlaceRepository placeRepository;
     private final MongoTemplate mongoTemplate;
 
     private final RestClient apiClient = RestClient.builder()
@@ -80,6 +83,8 @@ public class LostFoundService {
                     itemMap.put(childNode.getNodeName(), childNode.getTextContent());
                 }
 
+                Place place = placeRepository.findByName(itemMap.get("depPlace"));
+
                 return LostFoundDetail.builder()
                         .atcId(itemMap.get("atcId"))
                         .csteSteNm(itemMap.get("csteSteNm"))
@@ -96,6 +101,8 @@ public class LostFoundService {
                         .prdtClNm(itemMap.get("prdtClNm"))
                         .tel(itemMap.get("tel"))
                         .uniq(itemMap.get("uniq"))
+                        .lat(place.getLat())
+                        .lng(place.getLng())
                         .build();
             }
         } catch (Exception e) {

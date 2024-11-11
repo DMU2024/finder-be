@@ -21,4 +21,7 @@ public class LostFoundDetail {
     private String prdtClNm;
     private String tel;
     private String uniq;
+
+    private float lat;
+    private float lng;
 }
