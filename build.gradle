@@ -33,9 +33,10 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     implementation 'mysql:mysql-connector-java:8.0.32'
-    implementation group: 'javax.annotation', name: 'javax.annotation-api', version: '1.3.2'
+    implementation 'javax.annotation:javax.annotation-api:1.3.2'
     implementation 'javax.persistence:javax.persistence-api:2.2'
-    implementation group: 'org.json', name: 'json', version: '20240303'
+    implementation 'org.json:json:20240303'
+    implementation 'org.jsoup:jsoup:1.18.1'
 }
 
 tasks.named('test') {

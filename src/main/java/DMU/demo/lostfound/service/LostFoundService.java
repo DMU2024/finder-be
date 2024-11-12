@@ -7,7 +7,9 @@ import DMU.demo.place.domain.entity.Place;
 import DMU.demo.place.domain.repository.PlaceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -18,18 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClient;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.StringReader;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -40,11 +32,8 @@ public class LostFoundService {
     private final MongoTemplate mongoTemplate;
 
     private final RestClient apiClient = RestClient.builder()
-            .baseUrl("http://apis.data.go.kr/1320000")
+            .baseUrl("https://www.lost112.go.kr")
             .build();
-
-    @Value("${data.go.kr.api_key}")
-    private String API_KEY;
 
     public List<LostFound> getLostFounds(int page) {
         return lostFoundRepository.findBy(PageRequest.of(page, 5));
@@ -54,57 +43,61 @@ public class LostFoundService {
         String[] parsedId = id.split("-");
 
         ResponseEntity<String> response = apiClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/LosfundInfoInqireService/getLosfundDetailInfo")
-                        .queryParam("serviceKey", "{API_KEY}")
+                .uri(uriBuilder -> uriBuilder.path("/find/findDetail.do")
                         .queryParam("ATC_ID", parsedId[0])
                         .queryParam("FD_SN", parsedId[1])
-                        .build(API_KEY))
+                        .build())
                 .retrieve()
                 .toEntity(String.class);
 
         try {
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document document = builder.parse(new InputSource(new StringReader(response.getBody())));
-            Element root = document.getDocumentElement();
+            Document document = Jsoup.parse(response.getBody());
+            Elements fdInfoElements = document.select(".find_info");
+            String fdPrdtNm = fdInfoElements.select(".find_info_name").text().replace("습득물명 : ", "");
 
-            if (root.getNodeName().equals("OpenAPI_ServiceResponse")) {
-                NodeList nodeList = root.getChildNodes();
-                StringBuilder cause = new StringBuilder();
+            Elements fdInfoList = fdInfoElements.select(".find02");
 
-                for (int i = 0; i < nodeList.getLength(); i++) {
-                    cause.append(nodeList.item(i).getTextContent());
-                }
-                throw new RuntimeException(cause.toString().trim());
-            } else {
-                NodeList childNodes = root.getElementsByTagName("item").item(0).getChildNodes();
-                Map<String, String> itemMap = new HashMap<>();
-                for (int i = 0; i < childNodes.getLength(); i++) {
-                    Node childNode = childNodes.item(i);
-                    itemMap.put(childNode.getNodeName(), childNode.getTextContent());
-                }
+            String atcId = fdInfoList.get(0).text().split("-")[0];
+            String fdSn = fdInfoList.get(0).text().split("-")[1];
+            String fdYmd = fdInfoList.get(1).text().split(" ")[0];
+            String fdHor = fdInfoList.get(1).text().split(" ")[1];
+            String fdPlace = fdInfoList.get(2).text();
+            String prdtClNm = fdInfoList.get(3).text();
+            String depPlace = fdInfoList.get(5).text();
+            String csteSteNm = fdInfoList.get(6).text();
+            String tel = fdInfoList.get(7).text();
 
-                Place place = placeRepository.findByName(itemMap.get("depPlace"));
+            String fdFilePathImg = "https://www.lost112.go.kr" + document.select(".lost_img")
+                    .select("img")
+                    .attr("src")
+                    .replace("/thumbnail/", "/");
 
-                return LostFoundDetail.builder()
-                        .atcId(itemMap.get("atcId"))
-                        .csteSteNm(itemMap.get("csteSteNm"))
-                        .depPlace(itemMap.get("depPlace"))
-                        .fdFilePathImg(itemMap.get("fdFilePathImg"))
-                        .fdHor(itemMap.get("fdHor"))
-                        .fdPlace(itemMap.get("fdPlace"))
-                        .fdPrdtNm(itemMap.get("fdPrdtNm"))
-                        .fdSn(itemMap.get("fdSn"))
-                        .fdYmd(itemMap.get("fdYmd"))
-                        .fndKeepOrgnSeNm(itemMap.get("fndKeepOrgnSeNm"))
-                        .orgId(itemMap.get("orgId"))
-                        .orgNm(itemMap.get("orgNm"))
-                        .prdtClNm(itemMap.get("prdtClNm"))
-                        .tel(itemMap.get("tel"))
-                        .uniq(itemMap.get("uniq"))
-                        .lat(place.getLat())
-                        .lng(place.getLng())
-                        .build();
-            }
+            String uniq = document.select(".find_info_txt").html()
+                    .replace("<!-- 본문 텍스트 영역 -->", "")
+                    .replace("내용", "")
+                    .replace("<!--// 본문 텍스트 영역 --->", "")
+                    .replaceAll("<br>", "")
+                    .strip();
+
+            Place place = placeRepository.findByName(depPlace);
+
+            return LostFoundDetail.builder()
+                    .fdPrdtNm(fdPrdtNm)
+                    .atcId(atcId)
+                    .fdSn(fdSn)
+                    .fdYmd(fdYmd)
+                    .fdHor(fdHor)
+                    .fdPlace(fdPlace)
+                    .prdtClNm(prdtClNm)
+                    .depPlace(depPlace)
+                    .csteSteNm(csteSteNm)
+                    .tel(tel)
+                    .fdFilePathImg(fdFilePathImg)
+                    .uniq(uniq)
+                    .lat(place.getLat())
+                    .lng(place.getLng())
+                    .build();
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
