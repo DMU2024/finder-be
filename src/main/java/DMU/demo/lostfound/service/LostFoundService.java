@@ -80,6 +80,13 @@ public class LostFoundService {
                     .strip();
 
             Place place = placeRepository.findByName(depPlace);
+            float lat = 0;
+            float lng = 0;
+
+            if (place != null) {
+                lat = place.getLat();
+                lng = place.getLng();
+            }
 
             return LostFoundDetail.builder()
                     .fdPrdtNm(fdPrdtNm)
@@ -94,8 +101,8 @@ public class LostFoundService {
                     .tel(tel)
                     .fdFilePathImg(fdFilePathImg)
                     .uniq(uniq)
-                    .lat(place.getLat())
-                    .lng(place.getLng())
+                    .lat(lat)
+                    .lng(lng)
                     .build();
 
         } catch (Exception e) {
