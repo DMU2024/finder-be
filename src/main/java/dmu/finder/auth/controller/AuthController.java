@@ -21,6 +21,11 @@ public class AuthController {
     private final KakaoService kakaoService;
     private final UserRepository userRepository;
 
+    @GetMapping("/login")
+    public ResponseEntity<String> getLoginURL(@RequestParam(required = false) boolean isDev) {
+        return ResponseEntity.ok(kakaoService.GetLoginURL(isDev));
+    }
+
     @PostMapping("/login")
     public ResponseEntity<UserInfoMapping> kakaoLogin(@RequestBody Map<String, String> request) {
         boolean isDev = Boolean.parseBoolean(request.get("isDev"));

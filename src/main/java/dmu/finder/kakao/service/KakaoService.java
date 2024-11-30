@@ -31,17 +31,20 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class KakaoService {
+    private final String kakaoAuthURL = "https://kauth.kakao.com";
+    private final String kakaoApiURL = "https://kapi.kakao.com";
+
     private final UserRepository userRepository;
     private final KeywordRepository keywordRepository;
     private final BookmarkRepository bookmarkRepository;
 
     private final RestClient authClient = RestClient.builder()
-            .baseUrl("https://kauth.kakao.com")
+            .baseUrl(kakaoAuthURL)
             .defaultHeaders(httpHeaders -> httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED))
             .build();
 
     private final RestClient apiClient = RestClient.builder()
-            .baseUrl("https://kapi.kakao.com")
+            .baseUrl(kakaoApiURL)
             .defaultHeaders(httpHeaders -> httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED))
             .requestInterceptor(new RequestInterceptor())
             .build();
@@ -96,13 +99,20 @@ public class KakaoService {
     @Value("${kakao.dev.web_url}")
     private String KAKAO_DEV_WEB_URL;
 
-    public KakaoToken postKakaoAuth(String code, boolean isDev) {
+    public String GetLoginURL(boolean isLocal) {
+        return String.format(
+                "%s/oauth/authorize?client_id=%s&redirect_uri=%s&response_type=code",
+                kakaoAuthURL, KAKAO_CLIENT_ID, isLocal ? KAKAO_DEV_CALLBACK : KAKAO_CALLBACK
+        );
+    }
+
+    public KakaoToken postKakaoAuth(String code, boolean isLocal) {
         ResponseEntity<KakaoToken> response = authClient.post()
                 .uri(uriBuilder -> uriBuilder.path("/oauth/token")
                         .queryParam("grant_type", "authorization_code")
                         .queryParam("client_id", KAKAO_CLIENT_ID)
                         .queryParam("code", code)
-                        .queryParam("redirect_uri", isDev ? KAKAO_DEV_CALLBACK : KAKAO_CALLBACK)
+                        .queryParam("redirect_uri", isLocal ? KAKAO_DEV_CALLBACK : KAKAO_CALLBACK)
                         .build())
                 .retrieve()
                 .toEntity(KakaoToken.class);
