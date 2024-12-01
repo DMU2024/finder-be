@@ -43,7 +43,7 @@ public class LostFoundService {
         String[] parsedId = id.split("-");
 
         ResponseEntity<String> response = apiClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/dmu/finder/findDetail.do")
+                .uri(uriBuilder -> uriBuilder.path("/find/findDetail.do")
                         .queryParam("ATC_ID", parsedId[0])
                         .queryParam("FD_SN", parsedId[1])
                         .build())
