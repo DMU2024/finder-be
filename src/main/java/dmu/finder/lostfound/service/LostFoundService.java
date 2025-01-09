@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.safety.Safelist;
 import org.jsoup.select.Elements;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -72,10 +73,8 @@ public class LostFoundService {
                     .attr("src")
                     .replace("/thumbnail/", "/");
 
-            String uniq = document.select(".find_info_txt").html()
-                    .replace("<!-- 본문 텍스트 영역 -->", "")
+            String uniq = Jsoup.clean(document.select(".find_info_txt").html(), Safelist.basic())
                     .replace("내용", "")
-                    .replace("<!--// 본문 텍스트 영역 --->", "")
                     .replaceAll("<br>", "")
                     .strip();
 
