@@ -11,6 +11,10 @@ java {
     sourceCompatibility = '20'
 }
 
+bootJar {
+    archiveFileName = "boot.jar"
+}
+
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
