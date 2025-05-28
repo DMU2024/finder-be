@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.safety.Safelist;
 import org.jsoup.select.Elements;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +23,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClient;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -53,20 +56,32 @@ public class LostFoundService {
 
         try {
             Document document = Jsoup.parse(response.getBody());
-            Elements fdInfoElements = document.select(".find_info");
-            String fdPrdtNm = fdInfoElements.select(".find_info_name").text().replace("습득물명 : ", "");
+            Elements divFdInfo = document.select(".find_info");
+            String fdPrdtNm = divFdInfo.select(".find_info_name").text().replace("습득물명 : ", "");
 
-            Elements fdInfoList = fdInfoElements.select(".find02");
+            Map<String, String> data = new HashMap<>();
 
-            String atcId = fdInfoList.get(0).text().split("-")[0];
-            String fdSn = fdInfoList.get(0).text().split("-")[1];
-            String fdYmd = fdInfoList.get(1).text().split(" ")[0];
-            String fdHor = fdInfoList.get(1).text().split(" ")[1];
-            String fdPlace = fdInfoList.get(2).text();
-            String prdtClNm = fdInfoList.get(3).text();
-            String depPlace = fdInfoList.get(5).text();
-            String csteSteNm = fdInfoList.get(6).text();
-            String tel = fdInfoList.get(7).text();
+            Elements items = divFdInfo.select("ul > li");
+            for (Element li : items) {
+                Element keyElem = li.selectFirst("p.find01");
+                Element valElem = li.selectFirst("p.find02");
+
+                if (keyElem != null && valElem != null) {
+                    String key = keyElem.text().trim();
+                    String val = valElem.text().trim();
+                    data.put(key, val);
+                }
+            }
+
+            String atcId = data.get("관리번호").split("-")[0];
+            String fdSn = data.get("관리번호").split("-")[1];
+            String fdYmd = data.get("습득일").split(" ")[0];
+            String fdHor = data.get("습득일").split("-")[1];
+            String fdPlace = data.get("습득장소");
+            String prdtClNm = data.get("물품분류");
+            String depPlace = data.get("보관장소");
+            String csteSteNm = data.get("유실물상태");
+            String tel = data.get("보관장소연락처");
 
             String fdFilePathImg = "https://www.lost112.go.kr" + document.select(".lost_img")
                     .select("img")
