@@ -10,7 +10,7 @@ import java.util.Map;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/lostgoods")
+@RequestMapping("api/lostgoods")
 @RequiredArgsConstructor
 public class LostGoodsController {
     private final LostGoodsService lostGoodsService;

@@ -14,7 +14,7 @@ import java.util.Map;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/keywords")
+@RequestMapping("api/keywords")
 @RequiredArgsConstructor
 public class KeywordController {
     private final UserRepository userRepository;

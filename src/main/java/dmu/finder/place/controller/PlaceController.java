@@ -13,7 +13,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/place")
+@RequestMapping("api/place")
 @RequiredArgsConstructor
 public class PlaceController {
     private final PlaceRepository placeRepository;

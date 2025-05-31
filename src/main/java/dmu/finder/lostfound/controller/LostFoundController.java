@@ -10,7 +10,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/lostfound")
+@RequestMapping("api/lostfound")
 @RequiredArgsConstructor
 public class LostFoundController {
     private final LostFoundService lostFoundService;

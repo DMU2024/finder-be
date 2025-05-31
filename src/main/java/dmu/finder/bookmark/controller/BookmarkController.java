@@ -10,7 +10,7 @@ import java.util.Map;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/bookmarks")
+@RequestMapping("api/bookmarks")
 @RequiredArgsConstructor
 public class BookmarkController {
     private final BookmarkService bookmarkService;

@@ -15,7 +15,7 @@ import java.util.Map;
 
 @CrossOrigin(origins = "*")
 @Controller
-@RequestMapping("/auth")
+@RequestMapping("api/auth")
 @RequiredArgsConstructor
 public class AuthController {
     private final KakaoService kakaoService;
